@@ -1,0 +1,7 @@
+/bin/
+/dist/
+/build/
+/sysProps.xml
+*.pyc
+*.class
+*.jar
