@@ -36,7 +36,7 @@ cv2.namedWindow('window_frame')
 video_capture = cv2.VideoCapture(0)
 while True:
     bgr_image = video_capture.read()[1]
-    bgr_image = cv2.resize(bgr_image, (1300, 1300))
+    bgr_image = cv2.resize(bgr_image, (600, 600))
     gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
     rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
     faces = detect_faces(face_detection, gray_image)
@@ -68,12 +68,20 @@ while True:
 
         if emotion_text == 'angry':
             color = emotion_probability * np.asarray((255, 0, 0))
+            response = input("What's bugging you?")
+            print("\nI'm sorry about that but you should try to control your anger")
         elif emotion_text == 'sad':
             color = emotion_probability * np.asarray((0, 0, 255))
+            response = input("Why the long face?")
+            print("\nPlease cheer up soon!")
         elif emotion_text == 'happy':
             color = emotion_probability * np.asarray((255, 255, 0))
+            response = input("\nYou seem happy today. What's up?")
+            print("\nKeep it up!")
         elif emotion_text == 'surprise':
             color = emotion_probability * np.asarray((0, 255, 255))
+            response = input("Did I suprise you?")
+            print("\nI like to think that I'm suprising")
         else:
             color = emotion_probability * np.asarray((0, 255, 0))
 
