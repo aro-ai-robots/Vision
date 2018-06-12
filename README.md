@@ -3,20 +3,25 @@ The base emotion and gender classification program is from the the B-IT-BOTS rob
 
 This program is meant to be a simple chatbot based on the user's emotions. The chatbot will make a simple conversation with the reader based on its initial impression of the user's emotions. The program continues to loop after each conversation.
 
-Installation instructions
+Installation instructions for Ubuntu
 We are assuming that python3 and pip3 are installed on your computer.
 *When using pip install, use pip3 rather than pip.
-If usings a pc follow the directions below:
+
 Install Opencv and Contrib: https://www.pyimagesearch.com/2016/10/24/ubuntu-16-04-how-to-install-opencv/ 
+
 Install Keras, Tensorflow, and dependencies: https://www.pyimagesearch.com/2016/07/18/installing-keras-for-deep-learning/ 
+
 Install Festival: 
 sudo apt-get install festival festvox-kallpc16k
 Sudo apt-get install festival
+
 Install Pandas:
 sudo apt-get install python3-pandas
-5) Clone the repository from github:
-	Git clone https://github.com/aro-ai-robots/Vision.git 
-6) Cd
-~/Vision-master/face_classification/src$
-7) Run
-	python3 video_emotion_color_demo.py
+
+Clone the repository from github:
+Git clone https://github.com/aro-ai-robots/Vision.git 
+	
+Cd ~/Vision-master/face_classification/src$
+
+Run:
+python3 video_emotion_color_demo.py
