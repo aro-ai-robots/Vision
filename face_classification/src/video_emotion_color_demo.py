@@ -3,6 +3,7 @@ from statistics import mode
 import cv2
 from keras.models import load_model
 import numpy as np
+import os
 
 from utils.datasets import get_labels
 from utils.inference import detect_faces
@@ -68,20 +69,36 @@ while True:
 
         if emotion_text == 'angry':
             color = emotion_probability * np.asarray((255, 0, 0))
-            response = input("What's bugging you?")
+            os.system('echo "Why are you so angry?" | festival --tts') 
+            print("Why are you so angry?")
+            response = input("")
+            #response = input("What's bugging you?")
             print("\nI'm sorry about that but you should try to control your anger")
+            os.system('echo "Sorry about that but you should try to control your anger" | festival --tts') 
         elif emotion_text == 'sad':
             color = emotion_probability * np.asarray((0, 0, 255))
-            response = input("Why the long face?")
+            os.system('echo "Why the long face?" | festival --tts') 
+            print("Why the long face?")
+            response = input("")
+            #response = input("Why the long face?")
             print("\nPlease cheer up soon!")
+            os.system('echo "Please cheer up soon!" | festival --tts') 
         elif emotion_text == 'happy':
             color = emotion_probability * np.asarray((255, 255, 0))
-            response = input("\nYou seem happy today. What's up?")
+            os.system('echo "You seem happy today. How are you?" | festival --tts') 
+            print("You seem happy today. How are you?")
+            response = input("")
+            #response = input("\nYou seem happy today. What's up?")
             print("\nKeep it up!")
+            os.system('echo "Keep it up!" | festival --tts') 
         elif emotion_text == 'surprise':
             color = emotion_probability * np.asarray((0, 255, 255))
-            response = input("Did I suprise you?")
-            print("\nI like to think that I'm suprising")
+            os.system('echo "Did I surprise you?" | festival --tts') 
+            print("Did I surprise you?")
+            response = input("")
+            #response = input("Did I surprise you?")
+            print("\nI like to think that I'm surprising")
+            os.system('echo "I like to think that I am surprising" | festival --tts') 
         else:
             color = emotion_probability * np.asarray((0, 255, 0))
 
