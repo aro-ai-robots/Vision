@@ -1,5 +1,5 @@
 from statistics import mode
-
+import speech_recognition as sr
 import cv2
 from keras.models import load_model
 import numpy as np
@@ -12,6 +12,53 @@ from utils.inference import draw_bounding_box
 from utils.inference import apply_offsets
 from utils.inference import load_detection_model
 from utils.preprocessor import preprocess_input
+
+def recognize_speech_from_mic(recognizer, microphone):
+    """Transcribe speech from recorded from `microphone`.
+
+    Returns a dictionary with three keys:
+    "success": a boolean indicating whether or not the API request was
+               successful
+    "error":   `None` if no error occured, otherwise a string containing
+               an error message if the API could not be reached or
+               speech was unrecognizable
+    "transcription": `None` if speech could not be transcribed,
+               otherwise a string containing the transcribed text
+    """
+    # check that recognizer and microphone arguments are appropriate type
+    if not isinstance(recognizer, sr.Recognizer):
+        raise TypeError("`recognizer` must be `Recognizer` instance")
+
+    if not isinstance(microphone, sr.Microphone):
+        raise TypeError("`microphone` must be `Microphone` instance")
+
+    # adjust the recognizer sensitivity to ambient noise and record audio
+    # from the microphone
+    with microphone as source:
+        recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source)
+
+    # set up the response object
+    response = {
+        "success": True,
+        "error": None,
+        "transcription": None
+    }
+
+    # try recognizing the speech in the recording
+    # if a RequestError or UnknownValueError exception is caught,
+    #     update the response object accordingly
+    try:
+        response["transcription"] = recognizer.recognize_google(audio)
+    except sr.RequestError:
+        # API was unreachable or unresponsive
+        response["success"] = False
+        response["error"] = "API unavailable"
+    except sr.UnknownValueError:
+        # speech was unintelligible
+        response["error"] = "Unable to recognize speech"
+
+    return response
 
 # parameters for loading data and images
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
@@ -35,6 +82,13 @@ emotion_window = []
 # starting video streaming
 cv2.namedWindow('window_frame')
 video_capture = cv2.VideoCapture(0)
+
+#creating voice recognizer and microphone
+recognizer = sr.Recognizer()
+#use sr.Microphone.list_microphone_names() to find the device index
+#if device_index arg is omitted, it will use the default microphone
+microphone = sr.Microphone()
+	
 while True:
     bgr_image = video_capture.read()[1]
     bgr_image = cv2.resize(bgr_image, (600, 600))
@@ -68,39 +122,63 @@ while True:
             continue
 
         if emotion_text == 'angry':
-            color = emotion_probability * np.asarray((255, 0, 0))
-            os.system('echo "Why are you so angry?" | festival --tts') 
-            print("Why are you so angry?")
-            response = input("")
+	        color = emotion_probability * np.asarray((255, 0, 0))
+	        os.system('echo "Why are you so angry?" | festival --tts') 
+	        print("Why are you so angry?\n")
+	        response = recognize_speech_from_mic(recognizer, microphone)
+	        if not response["success"]:
+	            print("I didn't catch that. What did you say?\n")
+	        if response["error"]:
+	    	    print("ERROR: {}".format(response["error"]))
+	    	    break
+	        print("You said: {}".format(response["transcription"]))
             #response = input("What's bugging you?")
-            print("\nI'm sorry about that but you should try to control your anger")
-            os.system('echo "Sorry about that but you should try to control your anger" | festival --tts') 
+	        print("I'm sorry about that but you should try to control your anger\n")
+	        os.system('echo "Sorry about that but you should try to control your anger" | festival --tts') 
         elif emotion_text == 'sad':
-            color = emotion_probability * np.asarray((0, 0, 255))
-            os.system('echo "Why the long face?" | festival --tts') 
-            print("Why the long face?")
-            response = input("")
+	        color = emotion_probability * np.asarray((0, 0, 255))
+	        os.system('echo "Why the long face?" | festival --tts') 
+	        print("Why the long face?\n")
+	        response = recognize_speech_from_mic(recognizer, microphone)
+	        if not response["success"]:
+	            print("I didn't catch that. What did you say?\n")
+	        if response["error"]:
+	    	    print("ERROR: {}".format(response["error"]))
+	    	    break
+	        print("You said: {}".format(response["transcription"]))
             #response = input("Why the long face?")
-            print("\nPlease cheer up soon!")
-            os.system('echo "Please cheer up soon!" | festival --tts') 
+	        print("Please cheer up soon!\n")
+	        os.system('echo "Please cheer up soon!" | festival --tts') 
         elif emotion_text == 'happy':
-            color = emotion_probability * np.asarray((255, 255, 0))
-            os.system('echo "You seem happy today. How are you?" | festival --tts') 
-            print("You seem happy today. How are you?")
-            response = input("")
+	        color = emotion_probability * np.asarray((255, 255, 0))
+	        os.system('echo "You seem happy today. How are you?" | festival --tts') 
+	        print("You seem happy today. How are you?\n")
+	        response = recognize_speech_from_mic(recognizer, microphone)
+	        if not response["success"]:
+	            print("I didn't catch that. What did you say?\n")
+	        if response["error"]:
+	            print("ERROR: {}".format(response["error"]))
+	            break
+	        print("You said: {}".format(response["transcription"]))
             #response = input("\nYou seem happy today. What's up?")
-            print("\nKeep it up!")
-            os.system('echo "Keep it up!" | festival --tts') 
+	        print("Keep it up!\n")
+	        os.system('echo "Keep it up!" | festival --tts') 
         elif emotion_text == 'surprise':
-            color = emotion_probability * np.asarray((0, 255, 255))
-            os.system('echo "Did I surprise you?" | festival --tts') 
-            print("Did I surprise you?")
-            response = input("")
+	        color = emotion_probability * np.asarray((0, 255, 255))
+	        os.system('echo "Did I surprise you?" | festival --tts') 
+	        print("Did I surprise you?\n")
+	        response = recognize_speech_from_mic(recognizer, microphone)
+	        if not response["success"]:
+	            print("I didn't catch that. What did you say?\n")
+	        if response["error"]:
+	            print("ERROR: {}".format(response["error"]))
+	            break
+	        print("You said: {}".format(response["transcription"]))
             #response = input("Did I surprise you?")
-            print("\nI like to think that I'm surprising")
-            os.system('echo "I like to think that I am surprising" | festival --tts') 
+	        print("I like to think that I'm surprising\n")
+	        os.system('echo "I like to think that I am surprising" | festival --tts') 
         else:
-            color = emotion_probability * np.asarray((0, 255, 0))
+	        color = emotion_probability * np.asarray((0, 255, 0))
 
         color = color.astype(int)
         color = color.tolist()
