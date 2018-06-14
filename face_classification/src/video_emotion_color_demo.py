@@ -4,6 +4,7 @@ import cv2
 from keras.models import load_model
 import numpy as np
 import os
+import time
 
 from utils.datasets import get_labels
 from utils.inference import detect_faces
@@ -12,6 +13,7 @@ from utils.inference import draw_bounding_box
 from utils.inference import apply_offsets
 from utils.inference import load_detection_model
 from utils.preprocessor import preprocess_input
+from chatbot.chat import *
 
 def recognize_speech_from_mic(recognizer, microphone):
     """Transcribe speech from recorded from `microphone`.
@@ -90,14 +92,14 @@ recognizer = sr.Recognizer()
 microphone = sr.Microphone()
 	
 while True:
-    bgr_image = video_capture.read()[1]
-    bgr_image = cv2.resize(bgr_image, (600, 600))
-    gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
-    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
-    faces = detect_faces(face_detection, gray_image)
+    for i in range(1,10):
+        bgr_image = video_capture.read()[1]
+        bgr_image = cv2.resize(bgr_image, (600, 600))
+        gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
+        rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+        faces = detect_faces(face_detection, gray_image)
 
     for face_coordinates in faces:
-
         x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
         gray_face = gray_image[y1:y2, x1:x2]
         try:
@@ -132,9 +134,12 @@ while True:
 	    	    print("ERROR: {}".format(response["error"]))
 	    	    break
 	        print("You said: {}".format(response["transcription"]))
+	        botResp = respond(response["transcription"])
+	        print(botResp)
+	        os.system('echo %s | festival --tts' % botResp) 
             #response = input("What's bugging you?")
-	        print("I'm sorry about that but you should try to control your anger\n")
-	        os.system('echo "Sorry about that but you should try to control your anger" | festival --tts') 
+	        #print("Sorry about that but you should try to control your anger\n")
+	        #os.system('echo "Sorry about that but you should try to control your anger" | festival --tts') 
         elif emotion_text == 'sad':
 	        color = emotion_probability * np.asarray((0, 0, 255))
 	        os.system('echo "Why the long face?" | festival --tts') 
@@ -146,9 +151,12 @@ while True:
 	    	    print("ERROR: {}".format(response["error"]))
 	    	    break
 	        print("You said: {}".format(response["transcription"]))
+	        botResp = respond(response["transcription"])
+	        print(botResp)
+	        os.system('echo %s | festival --tts' % botResp) 
             #response = input("Why the long face?")
-	        print("Please cheer up soon!\n")
-	        os.system('echo "Please cheer up soon!" | festival --tts') 
+	        #print("Please cheer up soon!\n")
+	        #os.system('echo "Please cheer up soon!" | festival --tts') 
         elif emotion_text == 'happy':
 	        color = emotion_probability * np.asarray((255, 255, 0))
 	        os.system('echo "You seem happy today. How are you?" | festival --tts') 
@@ -160,9 +168,12 @@ while True:
 	            print("ERROR: {}".format(response["error"]))
 	            break
 	        print("You said: {}".format(response["transcription"]))
+	        botResp = respond(response["transcription"])
+	        print(botResp)
+	        os.system('echo %s | festival --tts' % botResp) 
             #response = input("\nYou seem happy today. What's up?")
-	        print("Keep it up!\n")
-	        os.system('echo "Keep it up!" | festival --tts') 
+	        #print("I am happy that you are happy. Keep it up!\n")
+	        #os.system('echo "I am happy that you are happy. Keep it up!" | festival --tts') 
         elif emotion_text == 'surprise':
 	        color = emotion_probability * np.asarray((0, 255, 255))
 	        os.system('echo "Did I surprise you?" | festival --tts') 
@@ -174,9 +185,29 @@ while True:
 	            print("ERROR: {}".format(response["error"]))
 	            break
 	        print("You said: {}".format(response["transcription"]))
+	        botResp = respond(response["transcription"])
+	        print(botResp)
+	        os.system('echo %s | festival --tts' % botResp) 
             #response = input("Did I surprise you?")
-	        print("I like to think that I'm surprising\n")
-	        os.system('echo "I like to think that I am surprising" | festival --tts') 
+	        #print("I like to think that I'm surprising\n")
+	        #os.system('echo "I like to think that I am surprising" | festival --tts') 
+        elif emotion_text == 'neutral':
+	        color = emotion_probability * np.asarray((0, 255, 255))
+	        os.system('echo "You seem pretty neutral today. How are you?" | festival --tts') 
+	        print("You seem pretty neutral today. How are you?\n")
+	        response = recognize_speech_from_mic(recognizer, microphone)
+	        if not response["success"]:
+	            print("I didn't catch that. What did you say?\n")
+	        if response["error"]:
+	            print("ERROR: {}".format(response["error"]))
+	            break
+	        print("You said: {}".format(response["transcription"]))
+	        botResp = respond(response["transcription"])
+	        print(botResp)
+	        os.system('echo %s | festival --tts' % botResp) 
+            #response = input("Did I surprise you?")
+	        #print("I see. Personally, I am hoping you have a good day.\n")
+	        #os.system('echo "I see. Personally, I am hoping you have a good day." | festival --tts') 
         else:
 	        color = emotion_probability * np.asarray((0, 255, 0))
 
