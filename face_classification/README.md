@@ -3,23 +3,6 @@ Real-time face detection and emotion/gender classification using fer2013/IMDB da
 * IMDB gender classification test accuracy: 96%.
 * fer2013 emotion classification test accuracy: 66%.
 
-For more information please consult the [publication](https://github.com/oarriaga/face_classification/blob/master/report.pdf)
-
-# Emotion/gender examples:
-
-![alt tag](images/demo_results.png)
-
-Guided back-prop
-![alt tag](images/gradcam_results.png)
-
-Real-time demo:
-<div align='center'>
-  <img src='images/color_demo.gif' width='400px'>
-</div>
-
-[B-IT-BOTS](https://mas-group.inf.h-brs.de/?page_id=622) robotics team :)
-![alt tag](images/robocup_team.png)
-
 ## Instructions
 
 ### Run real-time emotion demo:
