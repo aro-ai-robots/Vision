@@ -18,6 +18,10 @@ Sudo apt-get install festival
 Install Pandas:
 sudo apt-get install python3-pandas
 
+Install Speech Recognition and Pyaudio by following the tutorial:
+*Make sure to use pip3 rather than pip to install anything and use python3 as your interpreter instead of default python.
+https://realpython.com/python-speech-recognition/# 
+
 Clone the repository from github:
 Git clone https://github.com/aro-ai-robots/Vision.git 
 	
