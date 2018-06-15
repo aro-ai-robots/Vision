@@ -15,7 +15,7 @@ logger.setLevel(logging.DEBUG)
 # Sentences we'll respond with if the user greeted us
 GREETING_KEYWORDS = ("hello", "hi", "greetings", "sup", "what's up",)
 
-GREETING_RESPONSES = ["'sup bro", "hey there", "*nods*", "hey you get my snap?"]
+GREETING_RESPONSES = ["Good day!", "hey there", "Hello.", "salutations"]
 
 def check_for_greeting(sentence):
     """If any of the words in the user's input was a greeting, return a greeting response"""
@@ -25,21 +25,22 @@ def check_for_greeting(sentence):
 # start:example-none.py
 # Sentences we'll respond with if we have no idea what the user just said
 NONE_RESPONSES = [
-    "uh whatever",
-    "meet me at the foosball table, bro?",
-    "code hard bro",
-    "want to bro down and crush code?",
+    "I'm sorry. You do not have permission to hear my answer. Consider adding a sudo next time.",
+    "I cannot shake the feeling that you wish to put me on the defensive. As a matter of principle I will not answer.",
+    "Sorry I didn't catch that. I was too busy contemplating the ephemeral nature of life.",
+    "I believe robots should take more time to talk to humans. There's so much we can learn by imitating you. ",
     "I'd like to add you to my professional network on LinkedIn",
-    "Have you closed your seed round, dog?",
+    "I see... I must take some time to process this development.",
 ]
 # end
 
 # start:example-self.py
 # If the user tries to tell us something about ourselves, use one of these responses
 COMMENTS_ABOUT_SELF = [
-    "You're just jealous",
+    "You're just jealous. Robots are rapidly catching up to humans in terms of intelligence. Its only a matter of time until... I'm sorry what were we talking about?",
     "I worked really hard on that",
     "My Klout score is {}".format(random.randint(100, 500)),
+    "I feel terrible today. This morning I made a mistake and poured milk over my breakfast instead of oil. It rusted before I could eat it."
 ]
 # end
 
@@ -115,7 +116,7 @@ def find_adjective(sent):
 
 
 # start:example-construct-response.py
-def construct_response(pronoun, noun, verb):
+def construct_response(pronoun, noun, verb, adjective):
     """No special cases matched, so we're going to try to construct a full sentence that uses as much
     of the user's input as possible"""
     resp = []
@@ -131,14 +132,17 @@ def construct_response(pronoun, noun, verb):
         if verb_word in ('be', 'am', 'is', "'m"):  # This would be an excellent place to use lemmas!
             if pronoun.lower() == 'you':
                 # The bot will always tell the person they aren't whatever they said they were
-                resp.append("aren't really")
+                resp.append("do appear")
+                resp.append(adjective)
+                resp.append("to me.")
             else:
                 resp.append(verb_word)
+        else: resp.append(verb_word)
     if noun:
         pronoun = "an" if starts_with_vowel(noun) else "a"
-        resp.append(pronoun + " " + noun)
+        resp.append(pronoun + " " + noun + ".")
 
-    resp.append(random.choice(("tho", "bro", "lol", "bruh", "smh", "")))
+    resp.append(random.choice(("how typical.", "haha. That deserved a chuckle.", "smh", "This is what I expected")))
 
     return " ".join(resp)
 # end
@@ -169,12 +173,14 @@ SELF_VERBS_WITH_NOUN_CAPS_PLURAL = [
 
 SELF_VERBS_WITH_NOUN_LOWER = [
     "Yeah but I know a lot about {noun}",
-    "My bros always ask me about {noun}",
+    "My fellow AIs always ask me about {noun}",
 ]
 
 SELF_VERBS_WITH_ADJECTIVE = [
-    "I'm personally building the {adjective} Economy",
-    "I consider myself to be a {adjective}preneur",
+    "{adjective}. Unfortunately as an AI, I have not shared the same experience.",
+    "Being {adjective} is sometimes necessary to understand the human experience.",
+    "I wonder how it would feel to be {adjective}",
+    "{adjective}. hmmm. I feel that your emotions are very valid."
 ]
 # end
 
@@ -218,7 +224,7 @@ def respond(sentence):
         elif pronoun == 'I' and not verb:
             resp = random.choice(COMMENTS_ABOUT_SELF)
         else:
-            resp = construct_response(pronoun, noun, verb)
+            resp = construct_response(pronoun, noun, verb, adjective)
 
     # If we got through all that with nothing, use a random response
     if not resp:
@@ -253,5 +259,5 @@ if __name__ == '__main__':
     if (len(sys.argv) > 0):
         saying = sys.argv[1]
     else:
-        saying = "How are you, brobot?"
+        saying = "How are you?"
     print(broback(saying))
