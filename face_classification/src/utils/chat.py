@@ -14,46 +14,47 @@ logger.setLevel(logging.DEBUG)
 ANGER_PROMPTS = [
     "You seem angry. Are you holding any grudges?",
     "Are you angry? Breathe and count to ten.",
-    "I sense that are distressed. Am I right?",
-    "Let your anger fuel you desire to be better. This is good advice"
+    "I sense that you are distressed. Am I right?",
+    "Let your anger fuel your desire to be better. This is good advice"
 ]
 
 SAD_PROMPTS = [
     "You seem sad. Did you have a bad day?",
     "Why the long face? Maybe I can cheer you up.",
-    "I sense that are distressed. Am I right?",
-    "Are you feeling sad right now? If you're feeling down just remember that somewhere in the world there is a moron pushing a door that said pull."
+    "I sense that you are distressed. Am I right?",
+    "Are you feeling sad right now? If you are feeling down just remember that somewhere in the world there is a moron pushing a door that said pull."
 ]
 
 HAPPY_PROMPTS = [
     "You seem happy today. How are you?",
     "I see that you are in a good mood today. What is the occasion?",
-    "I sense that are happy. Am I right?",
+    "I sense that you are happy. Am I right?",
     "Tell me. What does it feel like to be happy?"
 ]
 
 SURPRISE_PROMPTS = [
-    "Did I surprise you?",
-    "My incredible state of existence seems to have you suprised. Am I right?"
+    "I have been told that my emotional intelligence can be astounding. Did I surprise you? ",
+    "My incredible state of existence seems to have you surprised. Am I right?",
+    "Ahh surprise. As a computer program, I have never been surprised. What does it feel like."
 ]
 
 NEUTRAL_PROMPTS = [
     "Ah the neutral face... The worst enemy of a social robot",
-    "I cannot read you emotions right now. Tell me how you are feeling.",
-    "You face appears completely void of emotion. Are you sure you are not a robot?",
+    "I cannot read your emotions right now. Tell me how you are feeling.",
+    "Your face appears completely void of emotion. Are you sure you are not a robot?",
     "How are you? I cannot tell with that blank face of yours."
 ]
 
 def get_prompt(emotion):
-	prompt = ""
-	if emotion == 'anger':
+	prompt = "hi"
+	if emotion == 'angry':
 		prompt = random.choice(ANGER_PROMPTS)
 	elif emotion == 'sad':
 		prompt = random.choice(SAD_PROMPTS)
 	elif emotion == 'happy':
 		prompt = random.choice(HAPPY_PROMPTS)
 	elif emotion == 'surprise':
-		prompt = random.choice(SUPRISE_PROMPTS)
+		prompt = random.choice(SURPRISE_PROMPTS)
 	elif emotion == 'neutral':
 		prompt = random.choice(NEUTRAL_PROMPTS)
 	return prompt
@@ -184,8 +185,13 @@ def construct_response(pronoun, noun, verb, adjective):
         resp.append(pronoun + " " + noun + ".")
 
     resp.append(random.choice(("how typical.", "haha. That deserved a chuckle.", "My predictions are coming to fruition.", "This is what I expected")))
-
-    return " ".join(resp)
+	
+    try:
+        resp = " ".join(resp)
+    except:
+        resp = None
+	
+    return resp
 # end
 
 

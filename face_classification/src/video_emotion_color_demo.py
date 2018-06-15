@@ -91,6 +91,11 @@ recognizer = sr.Recognizer()
 #use sr.Microphone.list_microphone_names() to find the device index
 #if device_index arg is omitted, it will use the default microphone
 microphone = sr.Microphone()
+
+#Chatbot introduction
+intro = "Hello, I am Herbot A. Simon. I am a social robot who can detect emotion and respond accordingly."
+print(intro)
+os.system('echo %s | festival --tts' % intro) 
 	
 while True:
     for i in range(1,10):
