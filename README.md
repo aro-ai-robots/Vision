@@ -1,6 +1,8 @@
 # Vision
 The base emotion and gender classification program is from the the B-IT-BOTS robotics team. https://github.com/oarriaga/face_classification
 
+The chatbot is based on brobot by Liza Daly: https://github.com/lizadaly/brobot
+
 This program is meant to be a simple chatbot based on the user's emotions. The chatbot will make a simple conversation with the reader based on its initial impression of the user's emotions. The program continues to loop after each conversation.
 
 Installation instructions for Ubuntu
