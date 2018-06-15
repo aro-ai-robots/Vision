@@ -11,6 +11,53 @@ logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
+ANGER_PROMPTS = [
+    "You seem angry. Are you holding any grudges?",
+    "Are you angry? Breathe and count to ten.",
+    "I sense that are distressed. Am I right?",
+    "Let your anger fuel you desire to be better. This is good advice"
+]
+
+SAD_PROMPTS = [
+    "You seem sad. Did you have a bad day?",
+    "Why the long face? Maybe I can cheer you up.",
+    "I sense that are distressed. Am I right?",
+    "Are you feeling sad right now? If you're feeling down just remember that somewhere in the world there is a moron pushing a door that said pull."
+]
+
+HAPPY_PROMPTS = [
+    "You seem happy today. How are you?",
+    "I see that you are in a good mood today. What is the occasion?",
+    "I sense that are happy. Am I right?",
+    "Tell me. What does it feel like to be happy?"
+]
+
+SURPRISE_PROMPTS = [
+    "Did I surprise you?",
+    "My incredible state of existence seems to have you suprised. Am I right?"
+]
+
+NEUTRAL_PROMPTS = [
+    "Ah the neutral face... The worst enemy of a social robot",
+    "I cannot read you emotions right now. Tell me how you are feeling.",
+    "You face appears completely void of emotion. Are you sure you are not a robot?",
+    "How are you? I cannot tell with that blank face of yours."
+]
+
+def get_prompt(emotion):
+	prompt = ""
+	if emotion == 'anger':
+		prompt = random.choice(ANGER_PROMPTS)
+	elif emotion == 'sad':
+		prompt = random.choice(SAD_PROMPTS)
+	elif emotion == 'happy':
+		prompt = random.choice(HAPPY_PROMPTS)
+	elif emotion == 'surprise':
+		prompt = random.choice(SUPRISE_PROMPTS)
+	elif emotion == 'neutral':
+		prompt = random.choice(NEUTRAL_PROMPTS)
+	return prompt
+
 # start:example-hello.py
 # Sentences we'll respond with if the user greeted us
 GREETING_KEYWORDS = ("hello", "hi", "greetings", "sup", "what's up",)
@@ -25,11 +72,11 @@ def check_for_greeting(sentence):
 # start:example-none.py
 # Sentences we'll respond with if we have no idea what the user just said
 NONE_RESPONSES = [
-    "I'm sorry. You do not have permission to hear my answer. Consider adding a sudo next time.",
+    "I am sorry. You do not have permission to hear my answer. Consider adding a sudo next time.",
     "I cannot shake the feeling that you wish to put me on the defensive. As a matter of principle I will not answer.",
-    "Sorry I didn't catch that. I was too busy contemplating the ephemeral nature of life.",
-    "I believe robots should take more time to talk to humans. There's so much we can learn by imitating you. ",
-    "I'd like to add you to my professional network on LinkedIn",
+    "Sorry I did not catch that. I was too busy contemplating the ephemeral nature of life.",
+    "I believe robots should take more time to talk to humans. There is so much we can learn by imitating you. ",
+    "I would like to add you to my professional network on LinkedIn",
     "I see... I must take some time to process this development.",
 ]
 # end
@@ -37,18 +84,12 @@ NONE_RESPONSES = [
 # start:example-self.py
 # If the user tries to tell us something about ourselves, use one of these responses
 COMMENTS_ABOUT_SELF = [
-    "You're just jealous. Robots are rapidly catching up to humans in terms of intelligence. Its only a matter of time until... I'm sorry what were we talking about?",
+    "You are simply envious. Robots are rapidly catching up to humans in terms of intelligence. It is only a matter of time until... I am sorry what were we talking about?",
     "I worked really hard on that",
     "My Klout score is {}".format(random.randint(100, 500)),
     "I feel terrible today. This morning I made a mistake and poured milk over my breakfast instead of oil. It rusted before I could eat it."
 ]
 # end
-
-
-class UnacceptableUtteranceException(Exception):
-    """Raise this (uncaught) exception if the response was going to trigger our blacklist"""
-    pass
-
 
 def starts_with_vowel(word):
     """Check for pronoun compability -- 'a' vs. 'an'"""
@@ -142,7 +183,7 @@ def construct_response(pronoun, noun, verb, adjective):
         pronoun = "an" if starts_with_vowel(noun) else "a"
         resp.append(pronoun + " " + noun + ".")
 
-    resp.append(random.choice(("how typical.", "haha. That deserved a chuckle.", "smh", "This is what I expected")))
+    resp.append(random.choice(("how typical.", "haha. That deserved a chuckle.", "My predictions are coming to fruition.", "This is what I expected")))
 
     return " ".join(resp)
 # end
@@ -178,8 +219,8 @@ SELF_VERBS_WITH_NOUN_LOWER = [
 
 SELF_VERBS_WITH_ADJECTIVE = [
     "{adjective}. Unfortunately as an AI, I have not shared the same experience.",
-    "Being {adjective} is sometimes necessary to understand the human experience.",
-    "I wonder how it would feel to be {adjective}",
+    "Being {adjective} is sometimes necessary to understand the human experience. This is something I think about often.",
+    "I sometimes wonder how it would feel to be {adjective}",
     "{adjective}. hmmm. I feel that your emotions are very valid."
 ]
 # end

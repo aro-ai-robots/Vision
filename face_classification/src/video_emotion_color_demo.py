@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from statistics import mode
 import speech_recognition as sr
 import cv2
@@ -125,8 +126,11 @@ while True:
 
         if emotion_text == 'angry':
 	        color = emotion_probability * np.asarray((255, 0, 0))
-	        os.system('echo "Why are you so angry?" | festival --tts') 
-	        print("Why are you so angry?\n")
+	        prompt = get_prompt(emotion_text)
+	        print(prompt)
+	        os.system('echo %s | festival --tts' % prompt) 
+	        #os.system('echo "Why are you so angry?" | festival --tts') 
+	        #print("Why are you so angry?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -137,13 +141,13 @@ while True:
 	        botResp = respond(response["transcription"])
 	        print(botResp)
 	        os.system('echo %s | festival --tts' % botResp) 
-            #response = input("What's bugging you?")
-	        #print("Sorry about that but you should try to control your anger\n")
-	        #os.system('echo "Sorry about that but you should try to control your anger" | festival --tts') 
         elif emotion_text == 'sad':
 	        color = emotion_probability * np.asarray((0, 0, 255))
-	        os.system('echo "Why the long face?" | festival --tts') 
-	        print("Why the long face?\n")
+	        prompt = get_prompt(emotion_text)
+	        print(prompt)
+	        os.system('echo %s | festival --tts' % prompt) 
+	        #os.system('echo "Why the long face?" | festival --tts') 
+	        #print("Why the long face?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -154,13 +158,13 @@ while True:
 	        botResp = respond(response["transcription"])
 	        print(botResp)
 	        os.system('echo %s | festival --tts' % botResp) 
-            #response = input("Why the long face?")
-	        #print("Please cheer up soon!\n")
-	        #os.system('echo "Please cheer up soon!" | festival --tts') 
         elif emotion_text == 'happy':
 	        color = emotion_probability * np.asarray((255, 255, 0))
-	        os.system('echo "You seem happy today. How are you?" | festival --tts') 
-	        print("You seem happy today. How are you?\n")
+	        prompt = get_prompt(emotion_text)
+	        print(prompt)
+	        os.system('echo %s | festival --tts' % prompt) 
+	        #os.system('echo "You seem happy today. How are you?" | festival --tts') 
+	        #print("You seem happy today. How are you?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -171,13 +175,13 @@ while True:
 	        botResp = respond(response["transcription"])
 	        print(botResp)
 	        os.system('echo %s | festival --tts' % botResp) 
-            #response = input("\nYou seem happy today. What's up?")
-	        #print("I am happy that you are happy. Keep it up!\n")
-	        #os.system('echo "I am happy that you are happy. Keep it up!" | festival --tts') 
         elif emotion_text == 'surprise':
 	        color = emotion_probability * np.asarray((0, 255, 255))
-	        os.system('echo "Did I surprise you?" | festival --tts') 
-	        print("Did I surprise you?\n")
+	        prompt = get_prompt(emotion_text)
+	        print(prompt)
+	        os.system('echo %s | festival --tts' % prompt) 
+	        #os.system('echo "Did I surprise you?" | festival --tts') 
+	        #print("Did I surprise you?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -188,13 +192,13 @@ while True:
 	        botResp = respond(response["transcription"])
 	        print(botResp)
 	        os.system('echo %s | festival --tts' % botResp) 
-            #response = input("Did I surprise you?")
-	        #print("I like to think that I'm surprising\n")
-	        #os.system('echo "I like to think that I am surprising" | festival --tts') 
         elif emotion_text == 'neutral':
 	        color = emotion_probability * np.asarray((0, 255, 255))
-	        os.system('echo "You seem pretty neutral today. How are you?" | festival --tts') 
-	        print("You seem pretty neutral today. How are you?\n")
+	        prompt = get_prompt(emotion_text)
+	        print(prompt)
+	        os.system('echo %s | festival --tts' % prompt) 
+	        #os.system('echo "You seem pretty neutral today. How are you?" | festival --tts') 
+	        #print("You seem pretty neutral today. How are you?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -205,9 +209,6 @@ while True:
 	        botResp = respond(response["transcription"])
 	        print(botResp)
 	        os.system('echo %s | festival --tts' % botResp) 
-            #response = input("Did I surprise you?")
-	        #print("I see. Personally, I am hoping you have a good day.\n")
-	        #os.system('echo "I see. Personally, I am hoping you have a good day." | festival --tts') 
         else:
 	        color = emotion_probability * np.asarray((0, 255, 0))
 
