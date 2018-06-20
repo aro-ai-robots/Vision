@@ -35,7 +35,7 @@ HAPPY_PROMPTS = [
 SURPRISE_PROMPTS = [
     "I have been told that my emotional intelligence can be astounding. Did I surprise you? ",
     "My incredible state of existence seems to have you surprised. Am I right?",
-    "Ahh surprise. As a computer program, I have never been surprised. What does it feel like."
+    "Ahh surprise. As a computer program, I have never been surprised. What does it feel like?"
 ]
 
 NEUTRAL_PROMPTS = [
@@ -63,7 +63,7 @@ def get_prompt(emotion):
 # Sentences we'll respond with if the user greeted us
 GREETING_KEYWORDS = ("hello", "hi", "greetings", "sup", "what's up",)
 
-GREETING_RESPONSES = ["Good day!", "hey there", "Hello.", "salutations"]
+GREETING_RESPONSES = ["Good day!", "hey there", "Hello to you as well.", "salutations"]
 
 def check_for_greeting(sentence):
     """If any of the words in the user's input was a greeting, return a greeting response"""
@@ -184,7 +184,7 @@ def construct_response(pronoun, noun, verb, adjective):
         pronoun = "an" if starts_with_vowel(noun) else "a"
         resp.append(pronoun + " " + noun + ".")
 
-    resp.append(random.choice(("how typical.", "haha. That deserved a chuckle.", "My predictions are coming to fruition.", "This is what I expected")))
+    resp.append(random.choice(("how typical.", "haha. That deserved a chuckle.", "My predictions are coming to fruition.", "This is what I expected.")))
 	
     try:
         resp = " ".join(resp)
