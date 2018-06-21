@@ -6,8 +6,6 @@ from keras.models import load_model
 import numpy as np
 import os
 import time
-from picamera.array import PiRGBArray
-from picamera import PiCamera
 
 from utils.datasets import get_labels
 from utils.inference import detect_faces
@@ -17,6 +15,15 @@ from utils.inference import apply_offsets
 from utils.inference import load_detection_model
 from utils.preprocessor import preprocess_input
 from utils.chat import *
+from picamera import PiCamera
+from picamera.array import PiRGBArray
+
+camera = PiCamera()
+camera.resolution=(640,480)
+camera.framerate = 32
+rawCapture = PiRGBArray(camera, size=(640,480))
+time.sleep(0.1)
+
 
 def recognize_speech_from_mic(recognizer, microphone):
     """Transcribe speech from recorded from `microphone`.
@@ -84,12 +91,9 @@ emotion_target_size = emotion_classifier.input_shape[1:3]
 # starting lists for calculating modes
 emotion_window = []
 
-# sinitialize the camera and grab a reference to the raw camera capture
+# starting video streaming
 cv2.namedWindow('window_frame')
-camera = PiCamera()
-camera.resolution = (640, 480)
-camera.framerate = 32
-rawCapture = PiRGBArray(camera, size=(640, 480))
+
 
 #creating voice recognizer and microphone
 recognizer = sr.Recognizer()
@@ -103,10 +107,13 @@ print(intro)
 os.system('echo %s | festival --tts' % intro) 
 	
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-    bgr_image = frame.array
-    gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
-    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
-    faces = detect_faces(face_detection, gray_image)
+    for i in range(1,10):
+        bgr_image = frame.array
+        rawCapture.truncate(0)
+        bgr_image = cv2.resize(bgr_image, (600, 600))
+        gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
+        rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+        faces = detect_faces(face_detection, gray_image)
 
     for face_coordinates in faces:
         x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
@@ -131,12 +138,14 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
             emotion_mode = mode(emotion_window)
         except:
             continue
-        #based on the emotion, the program gives the user a prompt and has a short conversation
+
         if emotion_text == 'angry':
 	        color = emotion_probability * np.asarray((255, 0, 0))
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt)
+	        os.system('echo %s | festival --tts' % prompt) 
+	        #os.system('echo "Why are you so angry?" | festival --tts') 
+	        #print("Why are you so angry?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -151,7 +160,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	        color = emotion_probability * np.asarray((0, 0, 255))
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt)
+	        os.system('echo %s | festival --tts' % prompt) 
+	        #os.system('echo "Why the long face?" | festival --tts') 
+	        #print("Why the long face?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -166,7 +177,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	        color = emotion_probability * np.asarray((255, 255, 0))
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt)
+	        os.system('echo %s | festival --tts' % prompt) 
+	        #os.system('echo "You seem happy today. How are you?" | festival --tts') 
+	        #print("You seem happy today. How are you?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -181,7 +194,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	        color = emotion_probability * np.asarray((0, 255, 255))
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt)
+	        os.system('echo %s | festival --tts' % prompt) 
+	        #os.system('echo "Did I surprise you?" | festival --tts') 
+	        #print("Did I surprise you?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -196,7 +211,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	        color = emotion_probability * np.asarray((0, 255, 255))
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt)
+	        os.system('echo %s | festival --tts' % prompt) 
+	        #os.system('echo "You seem pretty neutral today. How are you?" | festival --tts') 
+	        #print("You seem pretty neutral today. How are you?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -219,7 +236,5 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
     cv2.imshow('window_frame', bgr_image)
-    # clear the stream in preparation for the next frame
-    rawCapture.truncate(0)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
