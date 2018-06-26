@@ -3,71 +3,167 @@
 
 import time
 from Tkinter import *
+import RPi.GPIO as GPIO
 
-# This starts the GUI graphics
+# Set up GPIO preferences
+GPIO.cleanup()
+GPIO.setwarnings(False)           #do not show any warnings
+GPIO.setmode (GPIO.BCM)         #we are programming the GPIO by BCM pin numbers. (PIN35 as GPIO19)
+
+# Set up some variables for easy testing
+motorSpeed = 20 # 0-100
+bufferSize = 10 # range for stopping at motor position
+CHANNEL1 = 0
+CHANNEL2 = 1
+CHANNEL3 = 2
+CHANNEL4 = 3
+cheekDir = 26
+eyesDir = 27
+eyelidsDir = 17
+mouthDir = 6
+
+#Cheeks pins				#we are programming the GPIO by BCM pin numbers. (PIN35 as GPIO19)
+GPIO.setup(19,GPIO.OUT)           	# initialize GPIO19 as an output.
+pCheek = GPIO.PWM(19,100)          		#GPIO19 as PWM output, with 100Hz frequency
+pCheek.start(0)
+GPIO.setup(cheekDir,GPIO.OUT)				#GPIO26 as direction pin	
+
+#Eyeball Pins
+GPIO.setup(22,GPIO.OUT)           	# initialize GPIO22 as an output.
+pEyes = GPIO.PWM(22,100)          		#GPIO22 as PWM output, with 100Hz frequency
+pEyes.start(0)
+GPIO.setup(eyesDir,GPIO.OUT)				#GPIO27 as direction pin	
+
+#Eyelid pins
+GPIO.setup(13,GPIO.OUT)           	# initialize GPIO4 as an output.
+pEyelids = GPIO.PWM(13,100)          		#GPIo as PWM output, with 100Hz frequency
+pEyelids.start(0)
+GPIO.setup(eyelidsDir,GPIO.OUT)				#GPIO17 as direction pin
+
+#Mouth open pins
+GPIO.setup(5,GPIO.OUT)           	# initialize GPIO5 as an output.
+pMouth = GPIO.PWM(5,100)          		#GPIO5 as PWM output, with 100Hz frequency
+pMouth.start(0)
+GPIO.setup(mouthDir,GPIO.OUT)				#GPIO6 as direction pin		
+
+# set up the SPI interface pins for the MCP3008
+SPICLK = 18
+SPIMISO = 23
+SPIMOSI = 24
+SPICS = 25
+GPIO.setup(SPIMOSI, GPIO.OUT)
+GPIO.setup(SPIMISO, GPIO.IN)
+GPIO.setup(SPICLK, GPIO.OUT)
+GPIO.setup(SPICS, GPIO.OUT)
+
+# read SPI data from MCP3008 chip, 8 possible adc's (0 thru 7)
+def readadc(adcnum, clockpin, mosipin, misopin, cspin):
+	if ((adcnum > 7) or (adcnum < 0)):
+			return -1
+	GPIO.output(cspin, True)
+
+	GPIO.output(clockpin, False)  # start clock low
+	GPIO.output(cspin, False)     # bring CS low
+
+	commandout = adcnum
+	commandout |= 0x18  # start bit + single-ended bit
+	commandout <<= 3    # we only need to send 5 bits here
+	for i in range(5):
+			if (commandout & 0x80):
+					GPIO.output(mosipin, True)
+			else:
+					GPIO.output(mosipin, False)
+			commandout <<= 1
+			GPIO.output(clockpin, True)
+			GPIO.output(clockpin, False)
+
+	adcout = 0
+	# read in one empty bit, one null bit and 10 ADC bits
+	for i in range(12):
+			GPIO.output(clockpin, True)
+			GPIO.output(clockpin, False)
+			adcout <<= 1
+			if (GPIO.input(misopin)):
+					adcout |= 0x1
+
+	GPIO.output(cspin, True)
+	
+	adcout >>= 1       # first bit is 'null' so drop it
+	return adcout
+	
+def readADC(adcChannel):
+	return readadc(adcChannel, SPICLK, SPIMOSI, SPIMISO, SPICS)
+
+def moveMotor(slider, pinPWM, pinDir, Channel):
+	currentLocation = readADC(Channel)
+	if (currentLocation > slider):
+		GPIO.output(pinDir, GPIO.HIGH)
+		while(currentLocation < slider-bufferSize or currentLocation > slider+bufferSize):
+			currentLocation = readADC(Channel)
+			pinPWM.ChangeDutyCycle(motorSpeed)
+		pinPWM.ChangeDutyCycle(0)
+			
+	if (currentLocation < slider):
+		GPIO.output(pinDir, GPIO.LOW)
+		while(currentLocation < slider-bufferSize or currentLocation > slider+bufferSize):
+			currentLocation = readADC(Channel)
+			pinPWM.ChangeDutyCycle(motorSpeed)
+		pinPWM.ChangeDutyCycle(0)
+
+def cheekControl(val): 
+    slideVal = cheekSlider.get()
+    loc = slideVal * 35 + 300 
+    moveMotor(loc, pCheek, cheekDir, CHANNEL1)
+
+def eyesControl(val):
+    slideVal = eyesSlider.get()
+    loc = slideVal * 9 + 490
+    moveMotor(loc, pEyes, eyesDir, CHANNEL2)
+
+def eyelidsControl(val):
+    slideVal = eyelidsSlider.get()
+    loc = slideVal * 45 + 275
+    moveMotor(loc, pEyelids, eyelidsDir, CHANNEL3)
+
+def mouthControl(val):
+    slideVal = mouthSlider.get()
+    loc = slideVal * 15 + 400
+    moveMotor(loc, pMouth, mouthDir, CHANNEL4)
+
+# change these as desired - they're the pins connected from the
+# SPI port on the ADC to the Cobbler
+
 app = Tk()
 app.title('Face Adjustment app')
 app.geometry('400x300')
 
-# Default settings for all of the motors (initial face configuration)
-eyeCloseSetting = 5
-eyeSideSetting = 5
-mouthCloseSetting = 5
-mouthExpressionSetting = 5
-eyebrowSetting = 5
-neckSetting = 5
+#Cheek Slider
+cheekLabel = Label(app, text = 'Cheeks')
+cheekLabel.pack()
+cheekSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=cheekControl)
+cheekSlider.set(5)
+cheekSlider.pack()
 
+#eyes Slider
+eyesLabel = Label(app, text = 'Eyes')
+eyesLabel.pack()
+eyesSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=eyesControl)
+eyesSlider.set(5)
+eyesSlider.pack()
 
-# These are functions to controll the orangutans
-def eyeControl(val):
-    eyeCloseSetting = eyesOpenSlider.get()
-    eyeSideSetting = sideSlider.get()
-    ledout_val_eye = [0x0f, eyeCloseSetting, 0x05, eyeSideSetting, 0x05, 0x0f, 0x00]
-    print val
-    
+#eyelids Slider
+eyelidsLabel = Label(app, text = 'Eyelids')
+eyelidsLabel.pack()
+eyelidsSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=eyelidsControl)
+eyelidsSlider.set(1)
+eyelidsSlider.pack()
 
+#Mouth Slider
+mouthLabel = Label(app, text = 'Mouth')
+mouthLabel.pack()
+mouthSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=mouthControl)
+mouthSlider.set(5)
+mouthSlider.pack()
 
-def mouthControl(val):
-    mouthCloseSetting = mouthOpenSlider.get()
-    mouthExpressionSetting = expSlider.get()
-    ledout_val_mouth = [0x0f, mouthCloseSetting, 0x05, mouthExpressionSetting, 0x05, 0x0f, 0x00]
-    print val
-
-
-# This is the code for the sliders
-# Eye Open
-eyeOpenLabel = Label(app, text = 'Eye Open or Shut')
-eyeOpenLabel.pack()
-
-eyeOpenSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=eyeControl)
-eyeOpenSlider.set(5)
-eyeOpenSlider.pack()
-
-#Eye Positioning
-sideLabel = Label(app, text = 'Eye Side')
-sideLabel.pack()
-
-sideSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=eyeControl)
-sideSlider.set(5)
-sideSlider.pack()
-
-#Mouth Open/Close (not working)
-mouthOpenLabel = Label(app, text = 'Mouth Open')
-mouthOpenLabel.pack()
-
-mouthOpenSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=mouthControl)
-mouthOpenSlider.set(5)
-mouthOpenSlider.pack()
-
-#MouthPositioning
-expLabel = Label(app, text = 'Mouth Expression')
-expLabel.pack()
-
-expSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=mouthControl)
-expSlider.set(5)
-expSlider.pack()
 
 app.mainloop()
-
-
-
