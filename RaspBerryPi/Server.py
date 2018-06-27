@@ -5,7 +5,11 @@ import numpy as np
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('localhost', 10000)
+
+# IP of your computer
+IP = ''
+
+server_address = (IP, 10000)
 sock.bind(server_address)
 sock.listen(1)
 
@@ -18,7 +22,6 @@ while True:
             if not data: break
             print(data)
         except:
-            print("bad")
             sock.close()
 sock.close()
         

@@ -27,8 +27,11 @@ camera.rotation = 180
 rawCapture = PiRGBArray(camera, size=(640,480))
 time.sleep(0.1)
 
+
+# IP adress of computer connectiong to
+IP= ''
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('localhost', 10000)
+server_address = (IP, 10000)
 
 
 def recognize_speech_from_mic(recognizer, microphone):

@@ -18,6 +18,9 @@ from utils.inference import load_detection_model
 from utils.preprocessor import preprocess_input
 from utils.chat import *
 
+# IP Adress of server computer
+IP =''
+
 def recognize_speech_from_mic(recognizer, microphone):
     """Transcribe speech from recorded from `microphone`.
 
@@ -86,7 +89,7 @@ emotion_window = []
 
 # starting socket connection
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('localhost', 10000)
+server_address = (IP, 10000)
 sock.connect(server_address)
 
 # starting video streaming
