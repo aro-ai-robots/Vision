@@ -106,7 +106,6 @@ os.system('echo %s | festival --tts' % intro)
 	
 while True:
     for i in range(1,10):
-        sock.send("we made it".encode())
         bgr_image = video_capture.read()[1]
         bgr_image = cv2.resize(bgr_image, (600, 600))
         gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
@@ -139,6 +138,7 @@ while True:
 
         if emotion_text == 'angry':
 	        color = emotion_probability * np.asarray((255, 0, 0))
+	        sock.send('3'.encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
 	        os.system('echo %s | festival --tts' % prompt) 
@@ -156,6 +156,7 @@ while True:
 	        os.system('echo %s | festival --tts' % botResp) 
         elif emotion_text == 'sad':
 	        color = emotion_probability * np.asarray((0, 0, 255))
+	        sock.send('4'.encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
 	        os.system('echo %s | festival --tts' % prompt) 
@@ -173,6 +174,7 @@ while True:
 	        os.system('echo %s | festival --tts' % botResp) 
         elif emotion_text == 'happy':
 	        color = emotion_probability * np.asarray((255, 255, 0))
+	        sock.send('2'.encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
 	        os.system('echo %s | festival --tts' % prompt) 
@@ -190,6 +192,7 @@ while True:
 	        os.system('echo %s | festival --tts' % botResp) 
         elif emotion_text == 'surprise':
 	        color = emotion_probability * np.asarray((0, 255, 255))
+	        sock.send('5'.encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
 	        os.system('echo %s | festival --tts' % prompt) 
@@ -207,6 +210,7 @@ while True:
 	        os.system('echo %s | festival --tts' % botResp) 
         elif emotion_text == 'neutral':
 	        color = emotion_probability * np.asarray((0, 255, 255))
+	        sock.send('1'.encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
 	        os.system('echo %s | festival --tts' % prompt) 
