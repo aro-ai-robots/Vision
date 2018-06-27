@@ -6,6 +6,8 @@ from keras.models import load_model
 import numpy as np
 import os
 import time
+import sys
+import socket
 
 from utils.datasets import get_labels
 from utils.inference import detect_faces
@@ -82,6 +84,11 @@ emotion_target_size = emotion_classifier.input_shape[1:3]
 # starting lists for calculating modes
 emotion_window = []
 
+# starting socket connection
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_address = ('localhost', 10000)
+sock.connect(server_address)
+
 # starting video streaming
 cv2.namedWindow('window_frame')
 video_capture = cv2.VideoCapture(0)
@@ -99,6 +106,7 @@ os.system('echo %s | festival --tts' % intro)
 	
 while True:
     for i in range(1,10):
+        sock.send("we made it".encode())
         bgr_image = video_capture.read()[1]
         bgr_image = cv2.resize(bgr_image, (600, 600))
         gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)

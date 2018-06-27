@@ -6,6 +6,8 @@ from keras.models import load_model
 import numpy as np
 import os
 import time
+import sys
+import socket
 
 from utils.datasets import get_labels
 from utils.inference import detect_faces
@@ -21,8 +23,12 @@ from picamera.array import PiRGBArray
 camera = PiCamera()
 camera.resolution=(640,480)
 camera.framerate = 32
+camera.rotation = 180
 rawCapture = PiRGBArray(camera, size=(640,480))
 time.sleep(0.1)
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_address = ('localhost', 10000)
 
 
 def recognize_speech_from_mic(recognizer, microphone):
@@ -101,6 +107,10 @@ recognizer = sr.Recognizer()
 #if device_index arg is omitted, it will use the default microphone
 microphone = sr.Microphone()
 
+# connect to socket server
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.connect(server_address)
+
 #Chatbot introduction
 intro = "Hello, I am Herbot A. Simon. I am a social robot who can detect emotion and respond accordingly."
 print(intro)
@@ -141,6 +151,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
         if emotion_text == 'angry':
 	        color = emotion_probability * np.asarray((255, 0, 0))
+	        sock.send("3".encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
 	        os.system('echo %s | festival --tts' % prompt) 
@@ -158,6 +169,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	        os.system('echo %s | festival --tts' % botResp) 
         elif emotion_text == 'sad':
 	        color = emotion_probability * np.asarray((0, 0, 255))
+	        sock.send("4".encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
 	        os.system('echo %s | festival --tts' % prompt) 
@@ -175,6 +187,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	        os.system('echo %s | festival --tts' % botResp) 
         elif emotion_text == 'happy':
 	        color = emotion_probability * np.asarray((255, 255, 0))
+	        sock.send("2".encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
 	        os.system('echo %s | festival --tts' % prompt) 
@@ -192,6 +205,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	        os.system('echo %s | festival --tts' % botResp) 
         elif emotion_text == 'surprise':
 	        color = emotion_probability * np.asarray((0, 255, 255))
+	        sock.send("5".encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
 	        os.system('echo %s | festival --tts' % prompt) 
@@ -209,6 +223,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	        os.system('echo %s | festival --tts' % botResp) 
         elif emotion_text == 'neutral':
 	        color = emotion_probability * np.asarray((0, 255, 255))
+	        sock.send("1".encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
 	        os.system('echo %s | festival --tts' % prompt) 
