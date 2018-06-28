@@ -1,7 +1,5 @@
 import socket
 import sys
-import cv2
-import numpy as np
 
 #this function grabs the IP address of the machine running the server
 def get_ip():
