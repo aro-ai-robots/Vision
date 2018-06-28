@@ -2,8 +2,32 @@
 # Head Control
 
 import time
-from Tkinter import *
+#from Tkinter import *
 import RPi.GPIO as GPIO
+import socket
+
+# Get Pi's IP Address and Print it to terminal
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+print('Enter this IP address on client side to access server: \n' + get_ip())
+
+# Start Socket Server set up with IP of Computer and listen for Clients
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+IP = get_ip()
+server_address = (IP, 5000)
+sock.bind(server_address)
+sock.listen(1)
+
+
 
 # Set up GPIO preferences
 GPIO.cleanup()
@@ -228,22 +252,26 @@ def reactSurprised():
 	moveMotor(500,pMouth, mouthDir,CHANNEL4) 
 	moveMotor(535,pEyes, eyesDir,CHANNEL2)
 	
-file = open("emotion.txt","r")
+	
+# Sever Accepts Client and Controls Face based on recived data
+while True:
+    connection, client_address = sock.accept()
+    print("accepted")
+    while True:
+        try:
+            data = connection.recv(20)
+            if not data: break
+            if data =='1':
+                reactNeutral()
+            elif data == '2':
+                reactHappy()
+            elif data =='3':
+                reactAngry()
+            elif data =='4':
+                reactSad()
+            elif data == '5':
+                reactSurprised()
+        except:
+            sock.close()
+sock.close()
 
-for line in file:
-	if "1" in line: 
-		reactNeutral()
-		
-	if "2" in line: 
-		reactHappy()
-
-	if "3" in line: 
-		reactAngry()
-		
-	if "4" in line: 
-		reactSad()
-		
-	if "5" in line: 
-		reactSurprised()
-
-file.close()
