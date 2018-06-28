@@ -1,12 +1,17 @@
+'''
+'
+'USE WITH PYTHON 2.7
+'
+'''
+
 import socket
 import sys
 import cv2
-import numpy as np
 
+ip_address = raw_input("Enter the IP address of the server: ")
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('localhost', 10000)
-print >>sys.stderr, 'connecting to %s port %s' % server_address
+server_address = (ip_address, 5000)
 
 while True:
     try:
@@ -18,11 +23,4 @@ while True:
         sock.send(message)
     except:
         break
-    
-    try:
-        returned = sock.recv(999)
-        print (returned)
-    except:
-        print("bad")
-        sock.close()
 sock.close()
