@@ -11,12 +11,18 @@ GPIO.setwarnings(False)           #do not show any warnings
 GPIO.setmode (GPIO.BCM)         #we are programming the GPIO by BCM pin numbers. (PIN35 as GPIO19)
 
 # Set up some variables for easy testing
-motorSpeed = 20 # 0-100
+motorSpeed = 10 # 0-100
 bufferSize = 10 # range for stopping at motor position
 CHANNEL1 = 0
 CHANNEL2 = 1
 CHANNEL3 = 2
 CHANNEL4 = 3
+
+CHANNEL5 = 4 
+CHANNEL6 = 5
+CHANNEL7 = 6
+CHANNEL8 = 7
+
 cheekDir = 26
 eyesDir = 27
 eyelidsDir = 17
@@ -36,7 +42,7 @@ GPIO.setup(eyesDir,GPIO.OUT)				#GPIO27 as direction pin
 
 #Eyelid pins
 GPIO.setup(13,GPIO.OUT)           	# initialize GPIO4 as an output.
-pEyelids = GPIO.PWM(13,100)          		#GPIo as PWM output, with 100Hz frequency
+pEyelids = GPIO.PWM(13,100)          		#GPIo as PWM output, with 100Hz frequency  
 pEyelids.start(0)
 GPIO.setup(eyelidsDir,GPIO.OUT)				#GPIO17 as direction pin
 
@@ -93,6 +99,68 @@ def readadc(adcnum, clockpin, mosipin, misopin, cspin):
 	
 def readADC(adcChannel):
 	return readadc(adcChannel, SPICLK, SPIMOSI, SPIMISO, SPICS)
+'''	
+#Current Sensing - does not work due to random adc readings
+def safetyCheek():
+	currentSum = 0
+	for x in range(50):
+		currentSum += readADC(CHANNEL5)
+	current = currentSum/50
+	print current
+	if current > 180:
+		pCheek.ChangeDutyCycle(0)
+		pEyes.ChangeDutyCycle(0)
+		pEyelids.ChangeDutyCycle(0)
+		pMouth.ChangeDutyCycle(0)
+		print "Stalled Motor Shutting off"
+		return True
+	return False
+	
+def safetyEyes():
+	currentSum = 0
+	for x in range(50):
+		currentSum += readADC(CHANNEL6)
+	current = currentSum/50
+	print current
+	if current > 130:
+		pCheek.ChangeDutyCycle(0)
+		pEyes.ChangeDutyCycle(0)
+		pEyelids.ChangeDutyCycle(0)
+		pMouth.ChangeDutyCycle(0)
+		print "Stalled Motor Shutting off"
+		return True
+	return False
+	
+def safetyEyelids():
+	currentSum = 0
+	for x in range(50):
+		currentSum += readADC(CHANNEL7)
+	current = currentSum/50
+	print current
+	if current > 30:
+		pCheek.ChangeDutyCycle(0)
+		pEyes.ChangeDutyCycle(0)
+		pEyelids.ChangeDutyCycle(0)
+		pMouth.ChangeDutyCycle(0)
+		print "Stalled Motor Shutting off"
+		return True
+	return False
+	
+def safetyMouth():
+	currentSum = 0
+	for x in range(50):
+		currentSum += readADC(CHANNEL8)
+	current = currentSum/50
+	print current
+	if current > 25:
+		pCheek.ChangeDutyCycle(0)
+		pEyes.ChangeDutyCycle(0)
+		pEyelids.ChangeDutyCycle(0)
+		pMouth.ChangeDutyCycle(0)
+		print "Stalled Motor Shutting off"
+		return True
+	return False		
+'''
 
 def moveMotor(desiredLocation,pinPWM, pinDir, Channel):
 	currentLocation = readADC(Channel)
@@ -113,63 +181,69 @@ def moveEyelids(desiredLocation,pinPWM, pinDir, Channel):
 		if (currentLocation < desiredLocation-bufferSize):
 			GPIO.output(pinDir, GPIO.HIGH)
 		currentLocation = readADC(Channel)
-		pinPWM.ChangeDutyCycle(motorSpeed)
+		pinPWM.ChangeDutyCycle(30)
 	pinPWM.ChangeDutyCycle(0)
+	
+def blink():
+	moveEyelids(725,pEyelids, eyelidsDir,CHANNEL3) 
+	time.sleep(.25)
+	moveEyelids(320,pEyelids, eyelidsDir,CHANNEL3)
 
-def cheekControl(val): 
-    slideVal = cheekSlider.get()
-    loc = slideVal * 35 + 300 
-    moveMotor(loc, pCheek, cheekDir, CHANNEL1)
+def reactNeutral():
+	blink()
+	moveMotor(475,pCheek, cheekDir,CHANNEL1) 
+	moveEyelids(320,pEyelids, eyelidsDir,CHANNEL3) 
+	moveMotor(475,pMouth, mouthDir,CHANNEL4) 
+	moveMotor(490,pEyes, eyesDir,CHANNEL2)
+	time.sleep(1)
+	moveMotor(580,pEyes, eyesDir,CHANNEL2)
+	time.sleep(1)
+	moveMotor(535,pEyes, eyesDir,CHANNEL2)
 
-def eyesControl(val):
-    slideVal = eyesSlider.get()
-    loc = slideVal * 9 + 490
-    moveMotor(loc, pEyes, eyesDir, CHANNEL2)
+def reactHappy():	
+	blink()
+	moveMotor(300,pCheek, cheekDir,CHANNEL1) 
+	moveEyelids(320,pEyelids, eyelidsDir,CHANNEL3) 
+	moveMotor(500,pMouth, mouthDir,CHANNEL4) 
+	moveMotor(535,pEyes, eyesDir,CHANNEL2)
 
-def eyelidsControl(val):
-    slideVal = eyelidsSlider.get()
-    loc = slideVal * 45 + 275
-    moveEyelids(loc, pEyelids, eyelidsDir, CHANNEL3)
+def reactAngry():
+	blink()
+	moveMotor(640,pCheek, cheekDir,CHANNEL1) 
+	moveEyelids(500,pEyelids, eyelidsDir, CHANNEL3)
+	moveMotor(480,pMouth, mouthDir,CHANNEL4) 
+	moveMotor(544,pEyes, eyesDir,CHANNEL2)
 
-def mouthControl(val):
-    slideVal = mouthSlider.get()
-    loc = slideVal * 15 + 400
-    moveMotor(loc, pMouth, mouthDir, CHANNEL4)
+def reactSad():
+	blink()
+	moveMotor(640,pCheek, cheekDir,CHANNEL1) 
+	moveEyelids(500,pEyelids, eyelidsDir, CHANNEL3)
+	moveMotor(400,pMouth, mouthDir,CHANNEL4) 
+	moveMotor(517,pEyes, eyesDir,CHANNEL2)
 
-# change these as desired - they're the pins connected from the
-# SPI port on the ADC to the Cobbler
+def reactSurprised():
+	blink()
+	moveMotor(300,pCheek, cheekDir,CHANNEL1) 
+	moveEyelids(320,pEyelids, eyelidsDir,CHANNEL3) 
+	moveMotor(500,pMouth, mouthDir,CHANNEL4) 
+	moveMotor(535,pEyes, eyesDir,CHANNEL2)
+	
+file = open("emotion.txt","r")
 
-app = Tk()
-app.title('Face Adjustment app')
-app.geometry('400x300')
+for line in file:
+	if "1" in line: 
+		reactNeutral()
+		
+	if "2" in line: 
+		reactHappy()
 
-#Cheek Slider
-cheekLabel = Label(app, text = 'Cheeks')
-cheekLabel.pack()
-cheekSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=cheekControl)
-cheekSlider.set(5)
-cheekSlider.pack()
+	if "3" in line: 
+		reactAngry()
+		
+	if "4" in line: 
+		reactSad()
+		
+	if "5" in line: 
+		reactSurprised()
 
-#eyes Slider
-eyesLabel = Label(app, text = 'Eyes')
-eyesLabel.pack()
-eyesSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=eyesControl)
-eyesSlider.set(5)
-eyesSlider.pack()
-
-#eyelids Slider
-eyelidsLabel = Label(app, text = 'Eyelids')
-eyelidsLabel.pack()
-eyelidsSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=eyelidsControl)
-eyelidsSlider.set(1)
-eyelidsSlider.pack()
-
-#Mouth Slider
-mouthLabel = Label(app, text = 'Mouth')
-mouthLabel.pack()
-mouthSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=mouthControl)
-mouthSlider.set(5)
-mouthSlider.pack()
-
-
-app.mainloop()
+file.close()
