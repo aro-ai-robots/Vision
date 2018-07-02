@@ -68,30 +68,30 @@ Channel 4 maps to Mouth motor
 
 Channel 1:
 
-PWM --> 
+PWM (blue) --> pin 19
 
-DIR --> 
+DIR (yellow) --> pin 26
 
 
 Channel 2:
 
-PWN -->
+PWN (blue) --> pin 22
 
-DIR -->
+DIR (yellow) --> pin 27
 
 
 Channel 3:
 
-PWN -->
+PWN (blue) --> pin 13
 
-DIR -->
+DIR (yellow) --> pin 17
 
 
 Channel 4:
 
-PWN -->
+PWN (blue) --> pin 5
 
-DIR -->  
+DIR (yellow) --> pin 6
 
 
     
@@ -109,3 +109,5 @@ Eyeballs maps to Channel 1 on adc chip
 Eyelids maps to Channel 2 on adc chip
 
 Mouth maps to Channel 3 on adc chip
+
+cd `Vision` and run `python Main.py`
