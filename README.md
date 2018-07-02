@@ -16,15 +16,15 @@ Install Keras, Tensorflow, and dependencies:
 https://www.pyimagesearch.com/2016/07/18/installing-keras-for-deep-learning/ 
 
 Install Festival: 
-
+```
 sudo apt-get install festival festvox-kallpc16k
 
 Sudo apt-get install festival
-
+```
 
 Install Pandas:
 
-sudo apt-get install python3-pandas
+`sudo apt-get install python3-pandas`
 
 
 Install Speech Recognition and Pyaudio by following the tutorial:
@@ -34,11 +34,11 @@ https://realpython.com/python-speech-recognition/#
 
 
 Install textblob:
-
+```
 pip3 install -U textblob
 
 python3 -m textblob.download_corpora
-
+```
 
 Clone the repository from github:
 Git clone https://github.com/aro-ai-robots/Vision.git 
@@ -46,4 +46,4 @@ Git clone https://github.com/aro-ai-robots/Vision.git
 Cd ~/Vision-master/face_classification/src$
 
 Run:
-python3 video_emotion_color_demo.py
+`python3 video_emotion_color_demo.py`
