@@ -1,0 +1,2 @@
+talking = False
+running = True

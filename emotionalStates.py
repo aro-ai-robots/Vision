@@ -2,9 +2,14 @@
 # Head Control
 
 import time
-#from Tkinter import *
+from Tkinter import *
 import RPi.GPIO as GPIO
 import socket
+#import chat
+import threading
+import multiprocessing as mp
+import config as conf
+
 
 # Get Pi's IP Address and Print it to terminal
 def get_ip():
@@ -185,8 +190,16 @@ def safetyMouth():
 		return True
 	return False		
 '''
+def shutdown():
+		pCheek.ChangeDutyCycle(0)
+		pEyes.ChangeDutyCycle(0)
+		pEyelids.ChangeDutyCycle(0)
+		pMouth.ChangeDutyCycle(0)
+		print "Stalled Motor shutting off"
+	
 
 def moveMotor(desiredLocation,pinPWM, pinDir, Channel):
+	start = time.time()
 	currentLocation = readADC(Channel)
 	while(currentLocation < desiredLocation-bufferSize or currentLocation > desiredLocation+bufferSize):
 		if (currentLocation > desiredLocation+bufferSize):
@@ -195,9 +208,14 @@ def moveMotor(desiredLocation,pinPWM, pinDir, Channel):
 			GPIO.output(pinDir, GPIO.LOW)
 		currentLocation = readADC(Channel)
 		pinPWM.ChangeDutyCycle(motorSpeed)
+		end = time.time()
+		if (end - start) > 3:
+			shutdown()
+			break
 	pinPWM.ChangeDutyCycle(0)
 	
 def moveEyelids(desiredLocation,pinPWM, pinDir, Channel):
+	start  = time.time()
 	currentLocation = readADC(Channel)
 	while(currentLocation < desiredLocation-bufferSize or currentLocation > desiredLocation+bufferSize):
 		if (currentLocation > desiredLocation+bufferSize):
@@ -206,15 +224,19 @@ def moveEyelids(desiredLocation,pinPWM, pinDir, Channel):
 			GPIO.output(pinDir, GPIO.HIGH)
 		currentLocation = readADC(Channel)
 		pinPWM.ChangeDutyCycle(30)
+		end = time.time()
+		if (end - start) > 3:
+			shutdown()
+			break
 	pinPWM.ChangeDutyCycle(0)
 	
 def blink():
 	moveEyelids(725,pEyelids, eyelidsDir,CHANNEL3) 
-	time.sleep(.25)
+	time.sleep(.1)
 	moveEyelids(320,pEyelids, eyelidsDir,CHANNEL3)
 
 def reactNeutral():
-	blink()
+	#blink()
 	moveMotor(475,pCheek, cheekDir,CHANNEL1) 
 	moveEyelids(320,pEyelids, eyelidsDir,CHANNEL3) 
 	moveMotor(475,pMouth, mouthDir,CHANNEL4) 
@@ -225,35 +247,68 @@ def reactNeutral():
 	moveMotor(535,pEyes, eyesDir,CHANNEL2)
 
 def reactHappy():	
-	blink()
+	#blink()
 	moveMotor(300,pCheek, cheekDir,CHANNEL1) 
 	moveEyelids(320,pEyelids, eyelidsDir,CHANNEL3) 
 	moveMotor(500,pMouth, mouthDir,CHANNEL4) 
 	moveMotor(535,pEyes, eyesDir,CHANNEL2)
 
 def reactAngry():
-	blink()
+	#blink()
 	moveMotor(640,pCheek, cheekDir,CHANNEL1) 
 	moveEyelids(500,pEyelids, eyelidsDir, CHANNEL3)
 	moveMotor(480,pMouth, mouthDir,CHANNEL4) 
 	moveMotor(544,pEyes, eyesDir,CHANNEL2)
 
 def reactSad():
-	blink()
+	#blink()
 	moveMotor(640,pCheek, cheekDir,CHANNEL1) 
 	moveEyelids(500,pEyelids, eyelidsDir, CHANNEL3)
 	moveMotor(400,pMouth, mouthDir,CHANNEL4) 
 	moveMotor(517,pEyes, eyesDir,CHANNEL2)
 
 def reactSurprised():
-	blink()
+	#blink()
 	moveMotor(300,pCheek, cheekDir,CHANNEL1) 
 	moveEyelids(320,pEyelids, eyelidsDir,CHANNEL3) 
 	moveMotor(500,pMouth, mouthDir,CHANNEL4) 
 	moveMotor(535,pEyes, eyesDir,CHANNEL2)
 	
+def talk():
+	
+	#Continue running until we kill it
+	while conf.running:
+		if conf.talking == True: #If its talking, move the mouth
+			moveMotor(550,pMouth, mouthDir,CHANNEL4) 
+			time.sleep(.25)
+			moveMotor(400,pMouth, mouthDir,CHANNEL4) 
+			time.sleep(.25)
+	
+def thread_blink():
+	i = 0
+	while conf.running:
+		blink()
+		time.sleep(3.5)
+		i = i +1
+		if i%3 == 0:
+			moveMotor(500,pEyes, eyesDir,CHANNEL2)
+			time.sleep(0.1)
+			moveMotor(570,pEyes, eyesDir,CHANNEL2)
+			time.sleep(0.1)
+			moveMotor(535,pEyes, eyesDir,CHANNEL2)
+		
+def stopTalking():
+	moveMotor(400,pMouth, mouthDir,CHANNEL4)
 	
 # Sever Accepts Client and Controls Face based on recived data
+
+
+'''
+def StartTalk(i):
+		while i == '6':
+			talk()
+'''
+"""
 while True:
     connection, client_address = sock.accept()
     print("accepted")
@@ -261,17 +316,28 @@ while True:
         try:
             data = connection.recv(20)
             if not data: break
+            
             if data =='1':
                 reactNeutral()
-            elif data == '2':
+            if data == '2':
                 reactHappy()
-            elif data =='3':
+            if data =='3':
                 reactAngry()
-            elif data =='4':
+            if data =='4':
                 reactSad()
-            elif data == '5':
+            if data == '5':
                 reactSurprised()
+            if data == '6':
+				talk()
+
         except:
             sock.close()
+'''         
+mythread = mp.Process(target=StartTalk('6'))
+mythread.start()
+time.sleep(1)
+mythread.terminate()
+mythread.cancel()
+'''
 sock.close()
-
+"""
