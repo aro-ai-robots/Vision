@@ -49,7 +49,7 @@ Run:
 `python3 video_emotion_color_demo.py`
 
 
-## Wiring Documentation
+## Wiring Documentation  
 
   
 **On Motor Controller:**
@@ -91,7 +91,7 @@ Channel 4:
 
 PWN -->
 
-DIR -->
+DIR -->  
 
 
     
@@ -99,7 +99,7 @@ DIR -->
 
 Wiring Diagram from: https://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/connecting-the-cobbler-to-a-mcp3008
 
-Install Required packages from: https://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/necessary-packages
+Install Required packages from: https://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/necessary-packages  
 
   
 Cheeks maps to Channel 0 on adc chip
