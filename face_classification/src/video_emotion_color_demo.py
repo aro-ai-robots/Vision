@@ -18,6 +18,7 @@ from utils.inference import load_detection_model
 from utils.preprocessor import preprocess_input
 from utils.chat import *
 
+#When the code runs, it will ask for the IP address of the server you want to connect to.
 ip_address = input("Enter the IP address of the server: ")
 
 
@@ -89,30 +90,42 @@ emotion_window = []
 
 # starting socket connection
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = (ip_address, 10000)
+server_address = (ip_address, 4000)
 sock.connect(server_address)
 
 # starting video streaming
-cv2.namedWindow('window_frame')
+#cv2.namedWindow('window_frame')
 video_capture = cv2.VideoCapture(0)
 
 #creating voice recognizer and microphone
 recognizer = sr.Recognizer()
+
 #use sr.Microphone.list_microphone_names() to find the device index
 #if device_index arg is omitted, it will use the default microphone
 microphone = sr.Microphone()
 
 #Chatbot introduction
+# all sock.send commands are for sending data to server
 intro = "Hello, I am Herbot A. Simon. I am a social robot who can detect emotion and respond accordingly."
+sock.send('6'.encode())
 print(intro)
 os.system('echo %s | festival --tts' % intro) 
-	
+sock.send('7'.encode())
+
+# defining sleep times so face doesnt move and talk
+sleeper = 2.5
+sleeper_nutral = 5
+
+# While loop preforms Facial then Emotion Recogintion
+# then will base robots next responses based on
+# what Emotion it has recognized 
 while True:
     for i in range(1,10):
+		# For every 10 frames convert to gray and detect faces in frame
         bgr_image = video_capture.read()[1]
         bgr_image = cv2.resize(bgr_image, (600, 600))
         gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
-        rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+        #rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
         faces = detect_faces(face_detection, gray_image)
 
     for face_coordinates in faces:
@@ -132,19 +145,21 @@ while True:
         emotion_text = emotion_labels[emotion_label_arg]
         emotion_window.append(emotion_text)
 
-        if len(emotion_window) > frame_window:
-            emotion_window.pop(0)
+        #if len(emotion_window) > frame_window:
+            #emotion_window.pop(0)
         try:
             emotion_mode = mode(emotion_window)
         except:
             continue
-
         if emotion_text == 'angry':
-	        color = emotion_probability * np.asarray((255, 0, 0))
+	        #color = emotion_probability * np.asarray((255, 0, 0))
 	        sock.send('3'.encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
+	        time.sleep(sleeper)
+	        sock.send('6'.encode())
 	        os.system('echo %s | festival --tts' % prompt) 
+	        sock.send('7'.encode())
 	        #os.system('echo "Why are you so angry?" | festival --tts') 
 	        #print("Why are you so angry?\n")
 	        response = recognize_speech_from_mic(recognizer, microphone)
@@ -156,15 +171,18 @@ while True:
 	        print("You said: {}".format(response["transcription"]))
 	        botResp = respond(response["transcription"])
 	        print(botResp)
+	        sock.send('6'.encode())
 	        os.system('echo %s | festival --tts' % botResp) 
+	        sock.send('7'.encode())
         elif emotion_text == 'sad':
-	        color = emotion_probability * np.asarray((0, 0, 255))
+	        #color = emotion_probability * np.asarray((0, 0, 255))
 	        sock.send('4'.encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
+	        time.sleep(sleeper)
+	        sock.send('6'.encode())
 	        os.system('echo %s | festival --tts' % prompt) 
-	        #os.system('echo "Why the long face?" | festival --tts') 
-	        #print("Why the long face?\n")
+	        sock.send('7'.encode())
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -174,15 +192,18 @@ while True:
 	        print("You said: {}".format(response["transcription"]))
 	        botResp = respond(response["transcription"])
 	        print(botResp)
+	        sock.send('6'.encode())
 	        os.system('echo %s | festival --tts' % botResp) 
+	        sock.send('7'.encode())
         elif emotion_text == 'happy':
-	        color = emotion_probability * np.asarray((255, 255, 0))
+	        #color = emotion_probability * np.asarray((255, 255, 0))
 	        sock.send('2'.encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt) 
-	        #os.system('echo "You seem happy today. How are you?" | festival --tts') 
-	        #print("You seem happy today. How are you?\n")
+	        time.sleep(sleeper)
+	        sock.send('6'.encode())
+	        os.system('echo %s | festival --tts' % prompt)
+	        sock.send('7'.encode())
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -192,15 +213,18 @@ while True:
 	        print("You said: {}".format(response["transcription"]))
 	        botResp = respond(response["transcription"])
 	        print(botResp)
-	        os.system('echo %s | festival --tts' % botResp) 
+	        sock.send('6'.encode())
+	        os.system('echo %s | festival --tts' % botResp)
+	        sock.send('7'.encode()) 
         elif emotion_text == 'surprise':
-	        color = emotion_probability * np.asarray((0, 255, 255))
+	        #color = emotion_probability * np.asarray((0, 255, 255))
 	        sock.send('5'.encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
+	        time.sleep(sleeper)
+	        sock.send('6'.encode())
 	        os.system('echo %s | festival --tts' % prompt) 
-	        #os.system('echo "Did I surprise you?" | festival --tts') 
-	        #print("Did I surprise you?\n")
+	        sock.send('7'.encode())
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -210,15 +234,19 @@ while True:
 	        print("You said: {}".format(response["transcription"]))
 	        botResp = respond(response["transcription"])
 	        print(botResp)
+	        sock.send('6'.encode())
 	        os.system('echo %s | festival --tts' % botResp) 
+	        sock.send('7'.encode())
         elif emotion_text == 'neutral':
-	        color = emotion_probability * np.asarray((0, 255, 255))
+	        #color = emotion_probability * np.asarray((0, 255, 255))
 	        sock.send('1'.encode())
 	        prompt = get_prompt(emotion_text)
 	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt) 
-	        #os.system('echo "You seem pretty neutral today. How are you?" | festival --tts') 
-	        #print("You seem pretty neutral today. How are you?\n")
+	        time.sleep(sleeper_nutral)
+	        sock.send('6'.encode())
+	        
+	        os.system('echo %s | festival --tts' % prompt)
+	        sock.send('7'.encode())
 	        response = recognize_speech_from_mic(recognizer, microphone)
 	        if not response["success"]:
 	            print("I didn't catch that. What did you say?\n")
@@ -228,18 +256,20 @@ while True:
 	        print("You said: {}".format(response["transcription"]))
 	        botResp = respond(response["transcription"])
 	        print(botResp)
-	        os.system('echo %s | festival --tts' % botResp) 
+	        sock.send('6'.encode())
+	        os.system('echo %s | festival --tts' % botResp)
+	        sock.send('7'.encode())
         else:
-	        color = emotion_probability * np.asarray((0, 255, 0))
+	        #color = emotion_probability * np.asarray((0, 255, 0))
+	        sock.close()
 
-        color = color.astype(int)
-        color = color.tolist()
+        #color = color.astype(int)
+        #color = color.tolist()
 
-        draw_bounding_box(face_coordinates, rgb_image, color)
-        draw_text(face_coordinates, rgb_image, emotion_mode,
-                  color, 0, -45, 1, 1)
+        #draw_bounding_box(face_coordinates, rgb_image, color)
+        #draw_text(face_coordinates, rgb_image, emotion_mode, color, 0, -45, 1, 1)
 
-    bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
-    cv2.imshow('window_frame', bgr_image)
+    #bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
+    #cv2.imshow('window_frame', bgr_image)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
