@@ -48,6 +48,7 @@ Cd ~/Vision-master/face_classification/src$
 Run:
 `python3 video_emotion_color_demo.py`
 
+
 ## Wiring Documentation
 
 
@@ -60,6 +61,7 @@ Channel 2 maps to Eyeballs motor
 Channel 3 maps to Eyelids motor
 
 Channel 4 maps to Mouth motor
+
 
 
 **From Motor Controller Channels to Breadboard and Cobbler**
@@ -90,6 +92,7 @@ Channel 4:
 PWN -->
 
 DIR -->
+
 
 
 **ADC Installation and Wiring**
