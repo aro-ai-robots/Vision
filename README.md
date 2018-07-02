@@ -51,7 +51,7 @@ Run:
 
 ## Wiring Documentation
 
-
+  
 **On Motor Controller:**
 
 Channel 1 maps to Cheeks motor
@@ -63,7 +63,7 @@ Channel 3 maps to Eyelids motor
 Channel 4 maps to Mouth motor
 
 
-
+   
 **From Motor Controller Channels to Breadboard and Cobbler**
 
 Channel 1:
@@ -94,14 +94,14 @@ PWN -->
 DIR -->
 
 
-
+    
 **ADC Installation and Wiring**
 
 Wiring Diagram from: https://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/connecting-the-cobbler-to-a-mcp3008
 
 Install Required packages from: https://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/necessary-packages
 
-
+  
 Cheeks maps to Channel 0 on adc chip
 
 Eyeballs maps to Channel 1 on adc chip
