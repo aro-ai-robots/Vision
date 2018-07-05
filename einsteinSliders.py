@@ -46,6 +46,11 @@ pMouth = GPIO.PWM(5,100)          		#GPIO5 as PWM output, with 100Hz frequency
 pMouth.start(0)
 GPIO.setup(mouthDir,GPIO.OUT)				#GPIO6 as direction pin		
 
+#Neck Servo
+GPIO.setup(4, GPIO.OUT)
+pNeck = GPIO.PWM(4, 50)
+pNeck.start(0)
+
 # set up the SPI interface pins for the MCP3008
 SPICLK = 18
 SPIMISO = 23
@@ -133,8 +138,14 @@ def eyelidsControl(val):
 
 def mouthControl(val):
     slideVal = mouthSlider.get()
-    loc = slideVal * 15 + 400
+    loc = slideVal * 27 + 400
     moveMotor(loc, pMouth, mouthDir, CHANNEL4)
+    
+def neckControl(val):
+    slideVal = neckSlider.get()
+    angle = slideVal 
+    duty = float(angle) + 2.5
+    pNeck.ChangeDutyCycle(duty)
 
 # change these as desired - they're the pins connected from the
 # SPI port on the ADC to the Cobbler
@@ -171,5 +182,11 @@ mouthSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=mouthContr
 mouthSlider.set(5)
 mouthSlider.pack()
 
+#Neck Slider
+neckLabel = Label(app, text = 'Neck')
+neckLabel.pack()
+neckSlider = Scale(app, from_=0, to=10, orient = HORIZONTAL, command=neckControl)
+neckSlider.set(5)
+neckSlider.pack()
 
 app.mainloop()

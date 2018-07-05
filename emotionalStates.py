@@ -32,8 +32,6 @@ server_address = (IP, 5000)
 sock.bind(server_address)
 sock.listen(1)
 
-
-
 # Set up GPIO preferences
 GPIO.cleanup()
 GPIO.setwarnings(False)           #do not show any warnings
@@ -80,6 +78,11 @@ GPIO.setup(5,GPIO.OUT)           	# initialize GPIO5 as an output.
 pMouth = GPIO.PWM(5,100)          		#GPIO5 as PWM output, with 100Hz frequency
 pMouth.start(0)
 GPIO.setup(mouthDir,GPIO.OUT)				#GPIO6 as direction pin		
+
+#Neck Servo
+GPIO.setup(4, GPIO.OUT)
+pNeck = GPIO.PWM(4, 50)
+pNeck.start(0)
 
 # set up the SPI interface pins for the MCP3008
 SPICLK = 18
@@ -128,68 +131,7 @@ def readadc(adcnum, clockpin, mosipin, misopin, cspin):
 	
 def readADC(adcChannel):
 	return readadc(adcChannel, SPICLK, SPIMOSI, SPIMISO, SPICS)
-'''	
-#Current Sensing - does not work due to random adc readings
-def safetyCheek():
-	currentSum = 0
-	for x in range(50):
-		currentSum += readADC(CHANNEL5)
-	current = currentSum/50
-	print current
-	if current > 180:
-		pCheek.ChangeDutyCycle(0)
-		pEyes.ChangeDutyCycle(0)
-		pEyelids.ChangeDutyCycle(0)
-		pMouth.ChangeDutyCycle(0)
-		print "Stalled Motor Shutting off"
-		return True
-	return False
-	
-def safetyEyes():
-	currentSum = 0
-	for x in range(50):
-		currentSum += readADC(CHANNEL6)
-	current = currentSum/50
-	print current
-	if current > 130:
-		pCheek.ChangeDutyCycle(0)
-		pEyes.ChangeDutyCycle(0)
-		pEyelids.ChangeDutyCycle(0)
-		pMouth.ChangeDutyCycle(0)
-		print "Stalled Motor Shutting off"
-		return True
-	return False
-	
-def safetyEyelids():
-	currentSum = 0
-	for x in range(50):
-		currentSum += readADC(CHANNEL7)
-	current = currentSum/50
-	print current
-	if current > 30:
-		pCheek.ChangeDutyCycle(0)
-		pEyes.ChangeDutyCycle(0)
-		pEyelids.ChangeDutyCycle(0)
-		pMouth.ChangeDutyCycle(0)
-		print "Stalled Motor Shutting off"
-		return True
-	return False
-	
-def safetyMouth():
-	currentSum = 0
-	for x in range(50):
-		currentSum += readADC(CHANNEL8)
-	current = currentSum/50
-	print current
-	if current > 25:
-		pCheek.ChangeDutyCycle(0)
-		pEyes.ChangeDutyCycle(0)
-		pEyelids.ChangeDutyCycle(0)
-		pMouth.ChangeDutyCycle(0)
-		print "Stalled Motor Shutting off"
-		return True
-	return False		
-'''
+
 def shutdown():
 		pCheek.ChangeDutyCycle(0)
 		pEyes.ChangeDutyCycle(0)
@@ -232,7 +174,7 @@ def moveEyelids(desiredLocation,pinPWM, pinDir, Channel):
 	
 def blink():
 	moveEyelids(725,pEyelids, eyelidsDir,CHANNEL3) 
-	time.sleep(.1)
+	time.sleep(.05)
 	moveEyelids(320,pEyelids, eyelidsDir,CHANNEL3)
 
 def reactNeutral():
@@ -273,7 +215,16 @@ def reactSurprised():
 	moveEyelids(320,pEyelids, eyelidsDir,CHANNEL3) 
 	moveMotor(500,pMouth, mouthDir,CHANNEL4) 
 	moveMotor(535,pEyes, eyesDir,CHANNEL2)
+
+def turnNeckLeft():
+	pNeck.ChangeDutyCycle(4.5)
+
+def turnNeckRight():
+	pNeck.ChangeDutyCycle(10.5)
 	
+def turnNeckCenter():
+	pNeck.ChangeDutyCycle(7.5)
+
 def talk():
 	
 	#Continue running until we kill it
@@ -296,48 +247,14 @@ def thread_blink():
 			moveMotor(570,pEyes, eyesDir,CHANNEL2)
 			time.sleep(0.1)
 			moveMotor(535,pEyes, eyesDir,CHANNEL2)
+		if i%10 == 0:
+			turnNeckLeft()
+			time.sleep(2)
+			turnNeckRight()
+			time.sleep(2)
+			turnNeckCenter()
+
 		
 def stopTalking():
 	moveMotor(400,pMouth, mouthDir,CHANNEL4)
-	
-# Sever Accepts Client and Controls Face based on recived data
 
-
-'''
-def StartTalk(i):
-		while i == '6':
-			talk()
-'''
-"""
-while True:
-    connection, client_address = sock.accept()
-    print("accepted")
-    while True:
-        try:
-            data = connection.recv(20)
-            if not data: break
-            
-            if data =='1':
-                reactNeutral()
-            if data == '2':
-                reactHappy()
-            if data =='3':
-                reactAngry()
-            if data =='4':
-                reactSad()
-            if data == '5':
-                reactSurprised()
-            if data == '6':
-				talk()
-
-        except:
-            sock.close()
-'''         
-mythread = mp.Process(target=StartTalk('6'))
-mythread.start()
-time.sleep(1)
-mythread.terminate()
-mythread.cancel()
-'''
-sock.close()
-"""
