@@ -65,11 +65,32 @@ GREETING_KEYWORDS = ("hello", "hi", "greetings", "sup", "what's up",)
 
 GREETING_RESPONSES = ["Good day!", "hey there", "Hello to you as well.", "salutations"]
 
+AGREEMENT_KEYWORDS = ("yes", "yeah", "yep")
+
+AGREEMENT_RESPONSES = ["I am glad we are in agreement.", "It seems we are on the same page.", "Of course I'm right."]
+
+DISAGREEMENT_KEYWORDS = ("no", "wrong", "nope", "nah")
+
+DISAGREEMENT_RESPONSES = ["It appears we have conflicting opinions.", "You disagree? I think you are simply in denial.", "Denial is a river in Egypt."]
+
 def check_for_greeting(sentence):
     """If any of the words in the user's input was a greeting, return a greeting response"""
     for word in sentence.words:
         if word.lower() in GREETING_KEYWORDS:
             return random.choice(GREETING_RESPONSES)
+            
+def check_for_agreement(sentence):
+    """If any of the words in the user's input was a greeting, return a greeting response"""
+    for word in sentence.words:
+        if word.lower() in AGREEMENT_KEYWORDS:
+            return random.choice(AGREEMENT_RESPONSES)
+
+def check_for_disagreement(sentence):
+    """If any of the words in the user's input was a greeting, return a greeting response"""
+    for word in sentence.words:
+        if word.lower() in DISAGREEMENT_KEYWORDS:
+            return random.choice(DISAGREEMENT_RESPONSES)
+            
 # start:example-none.py
 # Sentences we'll respond with if we have no idea what the user just said
 NONE_RESPONSES = [
@@ -263,6 +284,12 @@ def respond(sentence):
     # If we just greeted the bot, we'll use a return greeting
     if not resp:
         resp = check_for_greeting(parsed)
+      
+    if not resp:
+        resp = check_for_agreement(parsed)
+        
+    if not resp:
+        resp = check_for_disagreement(parsed)
 
     if not resp:
         # If we didn't override the final sentence, try to construct a new one:
