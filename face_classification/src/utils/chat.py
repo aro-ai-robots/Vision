@@ -67,7 +67,7 @@ GREETING_RESPONSES = ["Good day!", "hey there", "Hello to you as well.", "saluta
 
 AGREEMENT_KEYWORDS = ("yes", "yeah", "yep")
 
-AGREEMENT_RESPONSES = ["I am glad we are in agreement.", "It seems we are on the same page.", "Of course I'm right."]
+AGREEMENT_RESPONSES = ["I am glad we are in agreement.", "It seems we are on the same page.", "Of course I am right."]
 
 DISAGREEMENT_KEYWORDS = ("no", "wrong", "nope", "nah")
 
