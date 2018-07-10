@@ -46,9 +46,13 @@ NEUTRAL_PROMPTS = [
 ]
 
 def get_prompt(emotion):
-	prompt = "hi"
+	prompt = "hello"
 	if emotion == 'angry':
 		prompt = random.choice(ANGER_PROMPTS)
+	elif emotion == 'disgust':
+		prompt = random.choice(SAD_PROMPTS)
+	elif emotion == 'fear':
+		prompt = random.choice(SAD_PROMPTS)
 	elif emotion == 'sad':
 		prompt = random.choice(SAD_PROMPTS)
 	elif emotion == 'happy':
@@ -69,7 +73,7 @@ AGREEMENT_KEYWORDS = ("yes", "yeah", "yep")
 
 AGREEMENT_RESPONSES = ["I am glad we are in agreement.", "It seems we are on the same page.", "Of course I am right."]
 
-DISAGREEMENT_KEYWORDS = ("no", "wrong", "nope", "nah")
+DISAGREEMENT_KEYWORDS = ("no", "wrong", "nope", "nah", "not")
 
 DISAGREEMENT_RESPONSES = ["It appears we have conflicting opinions.", "You disagree? I think you are simply in denial.", "Denial is a river in Egypt."]
 

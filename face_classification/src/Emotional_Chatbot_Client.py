@@ -69,36 +69,39 @@ def recognize_speech_from_mic(recognizer, microphone):
         response["error"] = "Unable to recognize speech"
 
     return response
-#creating voice recognizer and microphone
-recognizer = sr.Recognizer()
-#use sr.Microphone.list_microphone_names() to find the device index
-#if device_index arg is omitted, it will use the default microphone
-microphone = sr.Microphone()
-
-# Method controling ChatBot
-def EmotionResponse(emotion_to_respond):
-	whileloop = 1
-	while whileloop==1:
-		prompt = get_prompt(emotion_to_respond)
-		print(prompt)
-		time.sleep(sleeper)
-		sock.send('6'.encode())
-		os.system('echo %s | festival --tts' % prompt) 
-		sock.send('7'.encode())
-		response = recognize_speech_from_mic(recognizer,microphone)
-		if not response["success"]:
-			print("I didn't catch that. What did you say?\n")
-		if response["error"]:
-			print("ERROR: {}".format(response["error"]))
-			break
+    
+def makeConversation(emotion_text):
+	prompt = get_prompt(emotion_text)
+	print(prompt)
+	time.sleep(sleeper)
+	sock.send('6'.encode())
+	os.system('echo %s | festival --tts' % prompt) 
+	sock.send('7'.encode())
+	response = recognize_speech_from_mic(recognizer,microphone)
+	if not response["success"]:
+		print("I didn't catch that. What did you say?\n")
+	if response["error"]:
+		print("ERROR: {}".format(response["error"]))
+	try:
 		print("You said: {}".format(response["transcription"]))
 		botResp = respond(response["transcription"])
 		print(botResp)
 		sock.send('6'.encode())
 		os.system('echo %s | festival --tts' % botResp) 
 		sock.send('7'.encode())
-		whileloop=2
+	except:
+		botResp = "I cannot understand. Try speaking more clearly."
+		print(botResp)
+		sock.send('6'.encode())
+		os.system('echo %s | festival --tts' % botResp) 
+		sock.send('7'.encode())
+		
+#creating voice recognizer and microphone
+recognizer = sr.Recognizer()
 
+#use sr.Microphone.list_microphone_names() to find the device index
+#if device_index arg is omitted, it will use the default microphone
+microphone = sr.Microphone()
 
 # parameters for loading data and images
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
@@ -125,7 +128,7 @@ server_address = (ip_address, 4000)
 sock.connect(server_address)
 
 # starting video streaming
-#cv2.namedWindow('window_frame')
+cv2.namedWindow('window_frame')
 video_capture = cv2.VideoCapture(0)
 
 #Chatbot introduction
@@ -136,17 +139,23 @@ print(intro)
 os.system('echo %s | festival --tts' % intro) 
 sock.send('7'.encode())
 
-
-
 # While loop preforms Facial then Emotion Recogintion
 # then will base robots next responses based on
 # what Emotion it has recognized 
 while True:
-    bgr_image = video_capture.read()[1]
-    bgr_image = cv2.resize(bgr_image, (600, 600))
+    for x in range(5):
+        bgr_image = video_capture.read()[1]
+    bgr_image = cv2.resize(bgr_image, (1000, 1000))
     gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
     rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
     faces = detect_faces(face_detection, gray_image)
+    
+    bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
+    cv2.imshow('window_frame', bgr_image)
+    cv2.waitKey(1)
+    if cv2.waitKey(20) & 0xFF == ord('q'):
+        break
+    
     for face_coordinates in faces:
         x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
         gray_face = gray_image[y1:y2, x1:x2]
@@ -162,35 +171,23 @@ while True:
         emotion_probability = np.max(emotion_prediction)
         emotion_label_arg = np.argmax(emotion_prediction)
         emotion_text = emotion_labels[emotion_label_arg]
-        emotion_window.append(emotion_text)
 
-        if len(emotion_window) > frame_window:
-            emotion_window.pop(0)
-        try:
-            emotion_mode = mode(emotion_window)
-        except:
-            continue
         if emotion_text == 'angry':
 	        sock.send('3'.encode())
-	        EmotionResponse(emotion_text)
+	        makeConversation(emotion_text)
         elif emotion_text == 'sad':
 	        sock.send('4'.encode())
-	        EmotionResponse(emotion_text)
+	        makeConversation(emotion_text)
         elif emotion_text == 'happy':
 	        sock.send('2'.encode())
-	        EmotionResponse(emotion_text)
+	        makeConversation(emotion_text)
         elif emotion_text == 'surprise':
 	        sock.send('5'.encode())
-	        EmotionResponse(emotion_text)
+	        makeConversation(emotion_text)
         elif emotion_text == 'neutral':
 	        sock.send('1'.encode())
-	        EmotionResponse(emotion_text)
+	        makeConversation(emotion_text)
         else:
 	        sock.close()
-
-    bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
-    cv2.imshow('window_frame', bgr_image)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+	        
 video_capture.release()
-cv2.release()

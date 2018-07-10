@@ -64,6 +64,25 @@ def recognize_speech_from_mic(recognizer, microphone):
         response["error"] = "Unable to recognize speech"
 
     return response
+    
+def makeConversation(emotion_text):
+	prompt = get_prompt(emotion_text)
+	print(prompt)
+	os.system('echo %s | festival --tts' % prompt)
+	response = recognize_speech_from_mic(recognizer, microphone)
+	if not response["success"]:
+		print("I didn't catch that. What did you say?\n")
+	if response["error"]:
+		print("ERROR: {}".format(response["error"]))
+	try:
+		print("You said: {}".format(response["transcription"]))
+		botResp = respond(response["transcription"])
+		print(botResp)
+		os.system('echo %s | festival --tts' % botResp) 
+	except:
+		botResp = "I cannot understand. Try speaking more clearly."
+		print(botResp)
+		os.system('echo %s | festival --tts' % botResp) 
 
 # parameters for loading data and images
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
@@ -85,7 +104,7 @@ emotion_target_size = emotion_classifier.input_shape[1:3]
 emotion_window = []
 
 # starting video streaming
-#cv2.namedWindow('window_frame')
+cv2.namedWindow('window_frame')
 video_capture = cv2.VideoCapture(0)
 
 #creating voice recognizer and microphone
@@ -96,8 +115,7 @@ recognizer = sr.Recognizer()
 microphone = sr.Microphone()
 
 #Chatbot introduction
-# all sock.send commands are for sending data to server
-intro = "Hello, I am Herbot A. Simon. I am a social robot who can detect emotion and respond accordingly."
+intro = "Hello, I am Albot Einstein. I am a social robot who can detect emotion and respond accordingly."
 print(intro)
 os.system('echo %s | festival --tts' % intro) 
 
@@ -105,20 +123,28 @@ os.system('echo %s | festival --tts' % intro)
 # then will base robots next responses based on
 # what Emotion it has recognized 
 while True:
-    bgr_image = video_capture.read()[1]
-    bgr_image = cv2.resize(bgr_image, (600, 600))
+    for x in range(5):
+        bgr_image = video_capture.read()[1]
+    bgr_image = cv2.resize(bgr_image, (1000, 1000))
     gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
     rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
     faces = detect_faces(face_detection, gray_image)
-	
+    
+    bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
+    cv2.imshow('window_frame', bgr_image)
+    cv2.waitKey(1)
+    if cv2.waitKey(20) & 0xFF == ord('q'):
+        break
+    
     for face_coordinates in faces:
+        face_coordinates = faces[0]
         x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
         gray_face = gray_image[y1:y2, x1:x2]
         try:
             gray_face = cv2.resize(gray_face, (emotion_target_size))
         except:
             continue
-
+            
         gray_face = preprocess_input(gray_face, True)
         gray_face = np.expand_dims(gray_face, 0)
         gray_face = np.expand_dims(gray_face, -1)
@@ -126,100 +152,8 @@ while True:
         emotion_probability = np.max(emotion_prediction)
         emotion_label_arg = np.argmax(emotion_prediction)
         emotion_text = emotion_labels[emotion_label_arg]
-        emotion_window.append(emotion_text)
+        
+        makeConversation(emotion_text)
+     
+video_capture.release()
 
-        if len(emotion_window) > frame_window:
-            emotion_window.pop(0)
-        try:
-            emotion_mode = mode(emotion_window)
-        except:
-            continue
-        if emotion_text == 'angry':
-	        color = emotion_probability * np.asarray((255, 0, 0))
-	        prompt = get_prompt(emotion_text)
-	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt) 
-	        response = recognize_speech_from_mic(recognizer, microphone)
-	        if not response["success"]:
-	            print("I didn't catch that. What did you say?\n")
-	        if response["error"]:
-	    	    print("ERROR: {}".format(response["error"]))
-	    	    break
-	        print("You said: {}".format(response["transcription"]))
-	        botResp = respond(response["transcription"])
-	        print(botResp)
-	        os.system('echo %s | festival --tts' % botResp) 
-        elif emotion_text == 'sad':
-	        color = emotion_probability * np.asarray((0, 0, 255))
-	        prompt = get_prompt(emotion_text)
-	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt) 
-	        response = recognize_speech_from_mic(recognizer, microphone)
-	        if not response["success"]:
-	            print("I didn't catch that. What did you say?\n")
-	        if response["error"]:
-	    	    print("ERROR: {}".format(response["error"]))
-	    	    break
-	        print("You said: {}".format(response["transcription"]))
-	        botResp = respond(response["transcription"])
-	        print(botResp)
-	        os.system('echo %s | festival --tts' % botResp) 
-        elif emotion_text == 'happy':
-	        color = emotion_probability * np.asarray((255, 255, 0))
-	        prompt = get_prompt(emotion_text)
-	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt)
-	        response = recognize_speech_from_mic(recognizer, microphone)
-	        if not response["success"]:
-	            print("I didn't catch that. What did you say?\n")
-	        if response["error"]:
-	            print("ERROR: {}".format(response["error"]))
-	            break
-	        print("You said: {}".format(response["transcription"]))
-	        botResp = respond(response["transcription"])
-	        print(botResp)
-	        os.system('echo %s | festival --tts' % botResp)
-        elif emotion_text == 'surprise':
-	        color = emotion_probability * np.asarray((0, 255, 255))
-	        prompt = get_prompt(emotion_text)
-	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt)
-	        response = recognize_speech_from_mic(recognizer, microphone)
-	        if not response["success"]:
-	            print("I didn't catch that. What did you say?\n")
-	        if response["error"]:
-	            print("ERROR: {}".format(response["error"]))
-	            break
-	        print("You said: {}".format(response["transcription"]))
-	        botResp = respond(response["transcription"])
-	        print(botResp)
-	        os.system('echo %s | festival --tts' % botResp) 
-        elif emotion_text == 'neutral':
-	        color = emotion_probability * np.asarray((0, 255, 255))
-	        prompt = get_prompt(emotion_text)
-	        print(prompt)
-	        os.system('echo %s | festival --tts' % prompt)
-	        response = recognize_speech_from_mic(recognizer, microphone)
-	        if not response["success"]:
-	            print("I didn't catch that. What did you say?\n")
-	        if response["error"]:
-	            print("ERROR: {}".format(response["error"]))
-	            break
-	        print("You said: {}".format(response["transcription"]))
-	        botResp = respond(response["transcription"])
-	        print(botResp)
-	        os.system('echo %s | festival --tts' % botResp)
-        else:
-	        color = emotion_probability * np.asarray((0, 255, 0))
-	        sock.close()
-
-        color = color.astype(int)
-        color = color.tolist()
-
-        draw_bounding_box(face_coordinates, rgb_image, color)
-        draw_text(face_coordinates, rgb_image, emotion_mode, color, 0, -45, 1, 1)
-
-    bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
-    cv2.imshow('window_frame', bgr_image)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
