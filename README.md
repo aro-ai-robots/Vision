@@ -113,4 +113,5 @@ Mouth maps to Channel 3 on adc chip
 cd `Vision` and run `python Main.py`
 
 **Wiring Diagram**
-![alt text] (https://github.com/aro-ai-robots/Vision/blob/master/einstein_bb.png)
+
+(https://github.com/aro-ai-robots/Vision/blob/master/einstein_bb.png)
