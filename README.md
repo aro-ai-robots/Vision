@@ -114,4 +114,4 @@ cd `Vision` and run `python Main.py`
 
 **Wiring Diagram**
 
-(https://github.com/aro-ai-robots/Vision/blob/master/einstein_bb.png)
+https://github.com/aro-ai-robots/Vision/blob/master/einstein.png
