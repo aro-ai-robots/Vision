@@ -1,4 +1,4 @@
-# Vision
+# Einstein
 The base emotion and gender classification program is from the the B-IT-BOTS robotics team. https://github.com/oarriaga/face_classification
 
 The chatbot is based on brobot by Liza Daly: https://github.com/lizadaly/brobot
