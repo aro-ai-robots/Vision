@@ -62,6 +62,7 @@ Channel 3 maps to Eyelids motor
 
 Channel 4 maps to Mouth motor
 
+Relating to power and ground, Do not wire VCC to the power column of the breadboard. VCC from the motor controller maps to the same row as 5.0 V on the cobbler. GND maps to GND per usual.
 
    
 **From Motor Controller Channels to Breadboard and Cobbler**
@@ -119,6 +120,7 @@ Eyelids maps to Channel 2 on adc mcp chip
 Mouth maps to Channel 3 on adc mcp chip
 
 cd `Vision` and run `python Main.py`
+
 
 **Wiring Diagram**
 
