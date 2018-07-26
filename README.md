@@ -72,12 +72,16 @@ PWM (blue) --> pin 19
 
 DIR (yellow) --> pin 26
 
+GND (gray) --> GND
+
 
 Channel 2:
 
 PWN (blue) --> pin 22
 
 DIR (yellow) --> pin 27
+
+GND (gray) --> GND
 
 
 Channel 3:
@@ -86,6 +90,8 @@ PWN (blue) --> pin 13
 
 DIR (yellow) --> pin 17
 
+GND (gray) --> GND
+
 
 Channel 4:
 
@@ -93,6 +99,7 @@ PWN (blue) --> pin 5
 
 DIR (yellow) --> pin 6
 
+GND (gray) --> GND
 
     
 **ADC Installation and Wiring**
@@ -101,14 +108,15 @@ Wiring Diagram from: https://learn.adafruit.com/reading-a-analog-in-and-controll
 
 Install Required packages from: https://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/necessary-packages  
 
+The adc mcp chip channels run from top to bottom, meaning Channel 0 is the first row. 
   
-Cheeks maps to Channel 0 on adc chip
+Cheeks maps to Channel 0 on adc mcp chip
 
-Eyeballs maps to Channel 1 on adc chip
+Eyeballs maps to Channel 1 on adc mcp chip
 
-Eyelids maps to Channel 2 on adc chip
+Eyelids maps to Channel 2 on adc mcp chip
 
-Mouth maps to Channel 3 on adc chip
+Mouth maps to Channel 3 on adc mcp chip
 
 cd `Vision` and run `python Main.py`
 
