@@ -21,7 +21,7 @@ print('Enter this IP address on client side to access server: \n' + get_ip())
 # Start Socket Server set up with IP of Computer and listen for Clients
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 IP = get_ip()
-print(IP)
+
 server_address = (IP, 4000)
 sock.bind(server_address)
 sock.listen(1)
@@ -78,3 +78,8 @@ try:
 except KeyboardInterrupt:
 	conf.running = False
 	pass
+except: 
+	print "Exception happened"	
+finally: 
+	GPIO.cleanup()
+	
