@@ -55,7 +55,7 @@ First on the Raspberry Pi run the `python /Einstein_Emotions_Demo/Main.py`.
 
 This will start the websocket server giving the current IP adress of the Raspberry Pi.
 
-Then you will need to run `/face_classification/src/Emotional_Chatbot_Client.py`.
+Then you will need to run on a laptop `/face_classification/src/Emotional_Chatbot_Client.py`.
 
 This is where Einstein will be veiwing and listening to the user.
 
@@ -133,4 +133,4 @@ Then test motors,`cd Einstein/Einstein_Setup` and run `python tester.py`
 
 **Wiring Diagram**
 
-https://github.com/aro-ai-robots/Vision/blob/master/einstein.png
+https://github.com/aro-ai-robots/Einstein/blob/master/Einstein_Setup/einstein.png
