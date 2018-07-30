@@ -48,6 +48,14 @@ Cd ~/Vision-master/face_classification/src$
 Run:
 `python3 video_emotion_color_demo.py`
 
+## How to run
+First on the Raspberry Pi run the /Einstein_Emotions_Demo/Main.py.
+
+This will start the websocket server giving the current IP adress of the Raspberry Pi.
+
+Then you will need to run /face_classification/src/Emotional_Chatbot_Client.py.
+
+This is where Einstein will be veiwing and listening to the user.
 
 ## Wiring Documentation  
 
@@ -64,7 +72,7 @@ Channel 4 maps to Mouth motor
 
 Relating to power and ground, Do not wire VCC to the power column of the breadboard. VCC from the motor controller maps to the same row as 5.0 V on the cobbler. GND maps to GND per usual.
 
-   
+  
 **From Motor Controller Channels to Breadboard and Cobbler**
 
 Channel 1:
