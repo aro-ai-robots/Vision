@@ -49,11 +49,13 @@ Run:
 `python3 video_emotion_color_demo.py`
 
 ## How to run
-First on the Raspberry Pi run the /Einstein_Emotions_Demo/Main.py.
+In the Terminal `cd Einstein` then follow along.
+
+First on the Raspberry Pi run the `python /Einstein_Emotions_Demo/Main.py`.
 
 This will start the websocket server giving the current IP adress of the Raspberry Pi.
 
-Then you will need to run /face_classification/src/Emotional_Chatbot_Client.py.
+Then you will need to run `/face_classification/src/Emotional_Chatbot_Client.py`.
 
 This is where Einstein will be veiwing and listening to the user.
 
@@ -127,8 +129,7 @@ Eyelids maps to Channel 2 on adc mcp chip
 
 Mouth maps to Channel 3 on adc mcp chip
 
-cd `Vision` and run `python Main.py`
-
+Then test motors,`cd Einstein/Einstein_Setup` and run `python tester.py`
 
 **Wiring Diagram**
 
