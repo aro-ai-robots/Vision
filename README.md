@@ -49,6 +49,7 @@ Run:
 `python3 video_emotion_color_demo.py`
 
 ## How to run
+You will need to be on the same internet connection and this connection will need to allow websockets.
 In the Terminal `cd Einstein` then follow along.
 
 First on the Raspberry Pi run the `python /Einstein_Emotions_Demo/Main.py`.
